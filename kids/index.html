@@ -614,13 +614,20 @@ function renderSubject(){
     ${state.subject==='__custom__' ? `
       <div style="margin-top:14px;">
         <input type="text" maxlength="40" placeholder="예: 날개 달린 거북이" value="${state.customSubject.replace(/"/g,'&quot;')}"
-          oninput="setState({customSubject:this.value})">
+          oninput="onCustomSubjectInput(this)">
       </div>
     ` : ''}
     ${navHTML(!state.subject || (state.subject==='__custom__' && !state.customSubject.trim()))}
   `);
 }
 function chooseSubject(s){ setState({subject:s}); }
+function onCustomSubjectInput(el){
+  // state 값만 갱신하고 다시 그리지 않는다 — 매 글자마다 innerHTML을 다시 그리면
+  // 입력창(input) DOM이 새로 만들어지면서 포커스가 끊겨 한 글자 이상 입력이 안 된다.
+  state.customSubject = el.value;
+  const nextBtn = document.querySelector('.nav button.primary');
+  if(nextBtn) nextBtn.disabled = !el.value.trim();
+}
 
 function renderColor(){
   return panel(`
@@ -678,7 +685,7 @@ function renderExtra(){
     <h2>더 넣고 싶은 이야기가 있나요?</h2>
     <p class="hint">없으면 그냥 다음으로 넘어가도 괜찮아요.</p>
     <textarea rows="3" maxlength="120" placeholder="예: 밤하늘에 별이 가득했으면 좋겠어요"
-      oninput="setState({extra:this.value})">${state.extra}</textarea>
+      oninput="state.extra=this.value">${state.extra}</textarea>
     ${navHTML(false, '프롬프트 완성하기 ✨')}
   `);
 }
