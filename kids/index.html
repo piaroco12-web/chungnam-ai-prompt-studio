@@ -52,7 +52,7 @@
       --paper:#17241E;
       --muted:#5F7168;
       --faint:#8B9A91;
-      --brass:#8A6A15;
+      --brass:#7F600F;
       --brass-dim:rgba(138,106,21,.12);
       --jade:#0E7F5C;
       --jade-dim:rgba(14,127,92,.11);
@@ -72,7 +72,7 @@
     --paper:#17241E;
     --muted:#5F7168;
     --faint:#8B9A91;
-    --brass:#8A6A15;
+    --brass:#7F600F;
     --brass-dim:rgba(138,106,21,.12);
     --jade:#0E7F5C;
     --jade-dim:rgba(14,127,92,.11);
@@ -182,6 +182,13 @@
   .tile .ic{font-size:21px;line-height:1;}
   .tile .nm{font-weight:600;font-size:14.5px;letter-spacing:-.01em;}
   .tile .cap{font-size:11.5px;color:var(--muted);line-height:1.45;}
+  .tile .rec{
+    align-self:flex-start;margin-top:3px;
+    font-family:'PlexMono',monospace;font-size:10px;letter-spacing:.06em;
+    color:var(--brass);background:var(--brass-dim);
+    border:1px solid var(--brass);border-radius:999px;padding:2px 8px;
+  }
+  .ownsec{margin-top:4px;}
   .tile:hover{border-color:var(--jade);transform:translateY(-2px);}
   .tile[aria-pressed="true"]{
     border-color:var(--jade);background:var(--jade-dim);
@@ -361,12 +368,12 @@
     <main>
       <div class="rail" id="rail"></div>
 
-      <!-- STEP 1 · 학년 -->
+      <!-- STEP 1 · 단계 -->
       <section class="card step on" data-step="0">
-        <div class="kicker">Step 01 — Grade</div>
-        <h2 class="q">몇 학년인가요?</h2>
-        <p class="sub">학년에 따라 마지막에 프롬프트를 다루는 방법이 달라집니다.</p>
-        <div class="tiles two" id="gradeBox"></div>
+        <div class="kicker">Step 01 — Level</div>
+        <h2 class="q">어떤 단계로 만들까요?</h2>
+        <p class="sub">단계에 따라 내가 직접 쓰는 만큼이 달라집니다. 학년은 권장일 뿐이니 자유롭게 고르세요.</p>
+        <div class="tiles" id="levelBox"></div>
         <div class="foot"><span></span><button class="btn go" data-next disabled>다음</button></div>
       </section>
 
@@ -404,6 +411,12 @@
         <h2 class="q">어디에서 바라볼까요?</h2>
         <p class="sub">보는 위치와 거리를 정하면 그림의 인상이 크게 달라집니다.</p>
         <div class="tiles" id="camBox"></div>
+        <div class="ownsec" data-own="cam" hidden>
+          <div class="sublabel">직접 써 보기</div>
+          <textarea class="field" rows="2" maxlength="120"
+                    placeholder="예: 물속에서 위를 올려다본 각도, 수면 너머로 빛이 일렁인다"></textarea>
+          <div class="counter"><span class="cnt">0</span>/120 · 쓰면 위에서 고른 것 대신 이 문장이 쓰입니다</div>
+        </div>
         <div class="foot">
           <button class="btn back" data-back>이전</button>
           <button class="btn go" data-next disabled>다음</button>
@@ -416,6 +429,12 @@
         <h2 class="q">빛과 분위기는 어떤가요?</h2>
         <p class="sub">빛이 들어오는 방향과 색이 그림의 분위기를 만듭니다.</p>
         <div class="tiles" id="lightBox"></div>
+        <div class="ownsec" data-own="light" hidden>
+          <div class="sublabel">직접 써 보기</div>
+          <textarea class="field" rows="2" maxlength="120"
+                    placeholder="예: 창문 하나로만 빛이 들어와 한쪽 면만 밝고 반대쪽은 깊게 가라앉는다"></textarea>
+          <div class="counter"><span class="cnt">0</span>/120 · 쓰면 위에서 고른 것 대신 이 문장이 쓰입니다</div>
+        </div>
         <div class="foot">
           <button class="btn back" data-back>이전</button>
           <button class="btn go" data-next disabled>다음</button>
@@ -441,6 +460,12 @@
         <h2 class="q">어떤 재료로 그린 것처럼 보일까요?</h2>
         <p class="sub">같은 장면도 재료가 달라지면 완전히 다른 그림이 됩니다.</p>
         <div class="tiles" id="medBox"></div>
+        <div class="ownsec" data-own="med" hidden>
+          <div class="sublabel">직접 써 보기</div>
+          <textarea class="field" rows="2" maxlength="120"
+                    placeholder="예: 오래된 벽화처럼 표면이 갈라지고 색이 바랜 질감"></textarea>
+          <div class="counter"><span class="cnt">0</span>/120 · 쓰면 위에서 고른 것 대신 이 문장이 쓰입니다</div>
+        </div>
         <div class="foot">
           <button class="btn back" data-back>이전</button>
           <button class="btn go" data-next disabled>다음</button>
@@ -482,7 +507,7 @@
         </div>
 
         <div class="block" id="editBlock" hidden>
-          <h3>내 말로 바꿔 쓰기 <span class="chipmark e">6학년 활동</span></h3>
+          <h3 id="editTitle">내 말로 바꿔 쓰기 <span class="chipmark e">고쳐서 만들기</span></h3>
           <textarea class="field editor" id="editor" spellcheck="false"></textarea>
           <div class="actions">
             <button class="btn brass" id="copyMine">내 프롬프트 복사</button>
@@ -620,12 +645,27 @@ var MEDIA = [
    w:'사진처럼 사실적인 표면 묘사, 미세한 질감까지 살아 있다'}
 ];
 
+/* 난이도 단계 — 학년이 아니라 '내가 직접 쓰는 양'으로 나눈다.
+   학년이 늘어나도 단계는 그대로이므로 중학교까지 그대로 쓸 수 있다.
+     write : 각 항목을 직접 문장으로 쓸 수 있는가
+     edit  : 완성된 프롬프트를 편집창에서 고칠 수 있는가        */
+var LEVELS = [
+  {id:'1', ic:'1', nm:'골라서 만들기', cap:'보기에서 고르면 프롬프트가 완성됩니다',
+   rec:'초등 5학년 권장', write:false, edit:false},
+  {id:'2', ic:'2', nm:'고쳐서 만들기', cap:'완성된 프롬프트를 내 말로 다듬습니다',
+   rec:'초등 6학년 권장', write:false, edit:true},
+  {id:'3', ic:'3', nm:'직접 만들기', cap:'항목마다 내 문장을 직접 써 넣습니다',
+   rec:'중학생 권장', write:true, edit:true}
+];
+function LV(){ return LEVELS.filter(function(l){ return l.id === S.level; })[0] || LEVELS[0]; }
+
 var STEPS = 8;            // 0~6 입력, 7 결과
 var RESULT = 7;
 
 var S = {
-  grade:null, cat:null, subject:null, own:'', shape:null,
-  cam:null, light:null, colors:[], med:null, story:'', edited:null
+  level:null, cat:null, subject:null, own:'', shape:null,
+  cam:null, light:null, colors:[], med:null, story:'', edited:null,
+  wCam:'', wLight:'', wMed:''      // 3단계에서 직접 쓴 문장
 };
 
 /* ── 유틸 ── */
@@ -663,19 +703,27 @@ function markOne(box, el){
   if (el) el.setAttribute('aria-pressed','true');
 }
 
-/* 학년 */
-CATS.forEach(function(){});
-(function buildGrade(){
-  var box = $('gradeBox');
-  [{g:'5', ic:'5', nm:'5학년', cap:'완성된 프롬프트를 그대로 사용합니다'},
-   {g:'6', ic:'6', nm:'6학년', cap:'완성된 프롬프트를 내 말로 고쳐 씁니다'}]
-  .forEach(function(o){
-    var b = tile({ic:o.ic, nm:o.nm, cap:o.cap, wide:true}, function(){
-      S.grade = o.g; markOne(box, b); sync();
+/* 단계 */
+(function buildLevels(){
+  var box = $('levelBox');
+  LEVELS.forEach(function(L){
+    var b = tile({ic:L.ic, nm:L.nm, cap:L.cap}, function(){
+      S.level = L.id;
+      markOne(box, b);
+      applyLevel();
+      sync();
     });
+    b.insertAdjacentHTML('beforeend', '<span class="rec">'+esc(L.rec)+'</span>');
     box.appendChild(b);
   });
 })();
+
+/* 단계에 따라 '직접 써 보기' 칸을 켜고 끈다 */
+function applyLevel(){
+  var on = LV().write;
+  var secs = document.querySelectorAll('.ownsec');
+  for (var i=0;i<secs.length;i++) secs[i].hidden = !on;
+}
 
 /* 주제 → 소재 → 모양 */
 (function buildScene(){
@@ -759,6 +807,24 @@ $('storyInput').addEventListener('input', function(){
   sync();
 });
 
+/* 3단계 '직접 써 보기' 칸 — 이 역시 영구 노드이며 값만 읽는다 */
+(function bindOwnSections(){
+  var KEY = {cam:'wCam', light:'wLight', med:'wMed'};
+  var secs = document.querySelectorAll('.ownsec');
+  for (var i=0;i<secs.length;i++){
+    (function(sec){
+      var ta  = sec.querySelector('textarea');
+      var cnt = sec.querySelector('.cnt');
+      var key = KEY[sec.dataset.own];
+      ta.addEventListener('input', function(){
+        S[key] = this.value;
+        cnt.textContent = this.value.length;
+        sync();
+      });
+    })(secs[i]);
+  }
+})();
+
 /* ── 프롬프트 조립 (포맷 A) ── */
 function subjectName(){
   if (S.subject === '__own__') return S.own.trim() || '나만의 주제';
@@ -797,13 +863,21 @@ function sceneLine(){
   return s;
 }
 
+/* 직접 쓴 문장이 있으면 그것을 쓰고, 없으면 고른 보기를 쓴다 */
+function pick(written, chosen){
+  var w = String(written || '').trim();
+  if (w) return w;
+  return chosen ? chosen.w : '';
+}
+
 var SLOTS = [
   {k:'Scene',        ko:'장면',  get:sceneLine},
-  {k:'Camera',       ko:'시점',  get:function(){ return S.cam ? S.cam.w : ''; }},
-  {k:'Lighting',     ko:'빛',    get:function(){ return S.light ? S.light.w : ''; }},
+  {k:'Camera',       ko:'시점',  get:function(){ return pick(S.wCam, S.cam); }},
+  {k:'Lighting',     ko:'빛',    get:function(){ return pick(S.wLight, S.light); }},
   {k:'Color',        ko:'색',    get:colorLine},
-  {k:'Texture',      ko:'질감',  get:function(){ return S.med ? S.med.w : ''; }},
-  {k:'Text-in-image',ko:'글자',  get:function(){ return S.med ? '화면 전체가 그림으로만 채워진다' : ''; }}
+  {k:'Texture',      ko:'질감',  get:function(){ return pick(S.wMed, S.med); }},
+  {k:'Text-in-image',ko:'글자',  get:function(){
+     return (S.med || S.wMed.trim()) ? '화면 전체가 그림으로만 채워진다' : ''; }}
 ];
 
 function buildPrompt(){
@@ -844,16 +918,17 @@ function paintPreview(){
 var step = 0;
 
 function stepReady(n){
-  if (n === 0) return !!S.grade;
+  if (n === 0) return !!S.level;
   if (n === 1) {
     if (!S.cat || !S.subject || !S.shape) return false;
     if (S.subject === '__own__' && !S.own.trim()) return false;
     return true;
   }
-  if (n === 2) return !!S.cam;
-  if (n === 3) return !!S.light;
+  // 3단계에서는 직접 쓴 문장만으로도 넘어갈 수 있다
+  if (n === 2) return !!S.cam   || !!S.wCam.trim();
+  if (n === 3) return !!S.light || !!S.wLight.trim();
   if (n === 4) return S.colors.length > 0;
-  if (n === 5) return !!S.med;
+  if (n === 5) return !!S.med   || !!S.wMed.trim();
   return true;
 }
 
@@ -920,21 +995,23 @@ function renderOut(text){
 
 $('compileBtn').addEventListener('click', function(){
   var p = buildPrompt();
-  var six = S.grade === '6';
+  var canEdit = LV().edit;
 
   $('outBox').innerHTML = renderOut(p);
-  $('doneTitle').textContent = six
+  $('doneTitle').textContent = canEdit
     ? '기본 프롬프트가 만들어졌습니다'
     : '프롬프트가 완성되었습니다';
-  $('doneSub').textContent = six
+  $('doneSub').textContent = canEdit
     ? '아래에서 내 말로 고쳐 쓴 다음 사용해 보세요.'
     : '캔바 AI 이미지 만들기에 붙여넣어 보세요.';
-  $('outTitle').innerHTML = six
-    ? 'AI가 만든 프롬프트 <span class="chipmark">참고용</span>'
+  $('outTitle').innerHTML = canEdit
+    ? '지금까지 만들어진 프롬프트 <span class="chipmark">참고용</span>'
     : '완성된 프롬프트 <span class="chipmark j">복사해서 사용</span>';
+  $('editTitle').innerHTML = '내 말로 바꿔 쓰기 <span class="chipmark e">' +
+    esc(LV().nm) + '</span>';
 
-  $('editBlock').hidden = !six;
-  if (six && S.edited === null){
+  $('editBlock').hidden = !canEdit;
+  if (canEdit && S.edited === null){
     S.edited = p;
     $('editor').value = p;
   }
@@ -973,12 +1050,19 @@ $('copyBtn').addEventListener('click', function(){ copy(buildPrompt(), 'copyOk')
 $('copyMine').addEventListener('click', function(){ copy($('editor').value, 'copyOk2'); });
 
 $('restartBtn').addEventListener('click', function(){
-  S = {grade:null, cat:null, subject:null, own:'', shape:null,
-       cam:null, light:null, colors:[], med:null, story:'', edited:null};
+  S = {level:null, cat:null, subject:null, own:'', shape:null,
+       cam:null, light:null, colors:[], med:null, story:'', edited:null,
+       wCam:'', wLight:'', wMed:''};
   var pressed = document.querySelectorAll('[aria-pressed="true"]');
   for (var i=0;i<pressed.length;i++) pressed[i].setAttribute('aria-pressed','false');
   $('ownInput').value = ''; $('ownCount').textContent = '0';
   $('storyInput').value = ''; $('storyCount').textContent = '0';
+  var secs = document.querySelectorAll('.ownsec');
+  for (var j=0;j<secs.length;j++){
+    secs[j].querySelector('textarea').value = '';
+    secs[j].querySelector('.cnt').textContent = '0';
+  }
+  applyLevel();
   $('ownWrap').hidden = true;
   $('subjWrap').hidden = true;
   $('shapeWrap').hidden = true;
