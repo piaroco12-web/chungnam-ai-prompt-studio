@@ -1,0 +1,447 @@
+<title>Global Leaders Prompt Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;800&family=Noto+Sans+KR:wght@400;600;800&family=Noto+Sans+Thai:wght@400;600;800&family=Noto+Sans+Sinhala:wght@400;600;800&family=Noto+Sans+Tamil:wght@400;600;800&family=Noto+Sans+Thaana:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap">
+<style>
+/* Layout: navy stage with one bright working panel (from the Chungnam AI Image Studio repo), 6-step wizard after a language gate */
+:root{
+  --ink:#071a2b; --ink2:#0b3154; --blue:#0068b7; --green:#48a548; --orange:#f28c28; --gold:#c8a96a;
+  --panel:#fafcfd; --card:#ffffff; --text:#14283a; --muted:#5b6d7c; --line:#dce4ea; --soft:#edf3f6; --ok:#0c7142;
+  --sans:"Noto Sans","Noto Sans KR","Noto Sans Thai","Noto Sans Sinhala","Noto Sans Tamil","Noto Sans Thaana","Noto Naskh Arabic",system-ui,sans-serif;
+  --shadow:0 22px 70px rgba(0,16,34,.28);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{background:var(--ink)}
+body{min-height:100vh;font-family:var(--sans);color:var(--text);background:radial-gradient(circle at 82% 6%,rgba(0,104,183,.34),transparent 34%),radial-gradient(circle at 10% 92%,rgba(72,165,72,.16),transparent 30%),linear-gradient(150deg,#061725,#0a2944 58%,var(--ink));-webkit-tap-highlight-color:transparent;padding-inline:16px;padding-block:20px 36px}
+button,input,textarea,select{font:inherit}
+.shell{width:min(1160px,100%);margin:0 auto}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;color:#fff;margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:13px;min-width:0}
+.mark{flex:none;width:44px;height:44px;border-radius:13px;background:conic-gradient(from 220deg,var(--blue),var(--green),var(--orange),var(--blue));box-shadow:inset 0 0 0 5px rgba(255,255,255,.92)}
+.brand b{display:block;font-size:18px;letter-spacing:-.01em}
+.brand small{display:block;color:#afc2d1;font-size:12.5px;margin-top:2px}
+.langpick{display:flex;align-items:center;gap:8px;color:#b9cbd8;font-size:13px}
+.langpick select{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:8px 14px;min-height:42px;max-width:230px}
+.langpick select option{color:#14283a;background:#fff}
+.panel{background:var(--panel);border:1px solid rgba(255,255,255,.75);border-radius:26px;box-shadow:var(--shadow);overflow:hidden}
+.progress-wrap{padding:20px 26px 0}
+.progress-head{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted);margin-bottom:10px}
+.progress{height:5px;background:#e5ebef;border-radius:9px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:9px;transition:width .35s ease}
+.content{padding:clamp(22px,4.6vw,54px)}
+.step{animation:rise .28s ease}
+@keyframes rise{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+.eyebrow{color:var(--blue);font-size:12.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.title{font-size:clamp(26px,3.8vw,42px);line-height:1.25;letter-spacing:-.02em;margin:8px 0 10px;text-wrap:balance}
+.desc{font-size:clamp(15.5px,1.9vw,18px);line-height:1.65;color:var(--muted);margin:0 0 26px;max-width:62ch}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{min-height:140px;text-align:start;padding:20px;border:1px solid var(--line);border-radius:18px;background:var(--card);color:#193246;cursor:pointer;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;position:relative;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card:hover{transform:translateY(-2px);border-color:#91b8d3;box-shadow:0 12px 30px rgba(16,54,80,.1)}
+.card:focus-visible,.action:focus-visible,.langpick select:focus-visible,.detail input:focus-visible{outline:3px solid rgba(0,104,183,.35);outline-offset:3px}
+.card[aria-pressed="true"]{border:2px solid var(--blue);background:linear-gradient(145deg,#fff,#eef7fc);box-shadow:0 12px 32px rgba(0,104,183,.14)}
+.card[aria-pressed="true"]::after{content:"✓";position:absolute;inset-inline-end:14px;top:14px;width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:var(--blue);color:#fff;font-weight:800}
+.icon{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:#edf5f9;color:var(--blue);font-size:20px;margin-bottom:8px}
+.card h3{font-size:18px;line-height:1.35;margin:0;padding-inline-end:34px}
+.card p{font-size:14px;line-height:1.55;color:var(--muted);margin:0}
+.card .en{font-size:12px;color:#7c8d9a;letter-spacing:.01em;margin-top:auto;padding-top:6px;direction:ltr;text-align:start}
+[dir="rtl"] .card .en{text-align:end}
+.swatches{display:flex;gap:5px;margin:2px 0 8px}
+.swatches i{width:26px;height:9px;border-radius:6px;border:1px solid rgba(0,0,0,.06)}
+.lang-card{min-height:112px}
+.lang-card .native{font-size:22px;font-weight:800;line-height:1.3}
+.lang-card .meta{font-size:12.5px;color:var(--muted);direction:ltr}
+.subhead{margin:30px 0 12px;font-size:18px}
+.detail{margin-top:24px;display:grid;gap:8px;max-width:640px}
+.detail label{font-weight:700;font-size:15px}
+.detail input{min-height:52px;border:1px solid #ccd9e1;border-radius:14px;padding:0 16px;background:#fff;color:var(--text);width:100%}
+.nav{display:flex;justify-content:space-between;gap:12px;margin-top:30px;flex-wrap:wrap}
+.action{border:0;border-radius:14px;min-height:56px;padding:0 24px;font-weight:750;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.back{background:#edf1f4;color:#415768}
+.next{margin-inline-start:auto;background:linear-gradient(135deg,#075f9d,#0079c8);color:#fff;box-shadow:0 10px 24px rgba(0,104,183,.22)}
+.next:disabled{opacity:.4;box-shadow:none;cursor:not-allowed}
+.summary{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px}
+.pill{padding:7px 12px;border:1px solid #d6e1e8;border-radius:999px;background:#f5f8fa;color:#496071;font-size:13px}
+.prompts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.prompts.one{grid-template-columns:minmax(0,1fr)}
+.pbox{display:grid;gap:10px;min-width:0}
+.pbox h2{font-size:15px;margin:0;color:#164d6c;display:flex;align-items:center;gap:8px}
+.pbox h2 .tag{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8a692d;background:#f4f1e8;border-radius:999px;padding:3px 8px}
+.prompt{width:100%;min-height:320px;border:1px solid #ccd9e1;border-radius:16px;padding:18px;background:#fff;color:#1a3041;line-height:1.7;resize:vertical;font-size:14.5px}
+.copyrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.copy{background:var(--ok);color:#fff}
+.canva{background:#fff;color:#0b4f86;border:1px solid #b9d3e6}
+.toast{color:var(--ok);font-weight:700;font-size:14px;opacity:0;transition:opacity .2s}
+.toast.show{opacity:1}
+.note{margin-top:20px;padding:15px 17px;border-radius:13px;background:#f7f2e7;color:#705c35;font-size:14px;line-height:1.6;border:1px solid #eadcbd}
+.trnote{margin:0 0 22px;padding:11px 14px;border-radius:12px;background:#eef6fb;color:#29587a;font-size:13.5px;line-height:1.55;border:1px solid #d3e6f2}
+.footer{color:#95aabd;text-align:center;font-size:12px;margin-top:18px;line-height:1.6}
+@media(max-width:900px){.grid.four{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.grid,.grid.four{grid-template-columns:repeat(2,minmax(0,1fr))}.prompts{grid-template-columns:minmax(0,1fr)}.card{min-height:124px;padding:16px}.progress-wrap{padding:18px 18px 0}.content{padding:24px 18px}}
+@media(max-width:460px){.grid{grid-template-columns:minmax(0,1fr)}.grid.four{grid-template-columns:repeat(2,minmax(0,1fr))}.title{font-size:27px}.panel{border-radius:22px}.langpick select{max-width:180px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<main class="shell">
+  <header class="topbar">
+    <div class="brand"><span class="mark" aria-hidden="true"></span><div><b>Global Leaders Prompt Studio</b><small>KNUE Global Education Leadership × Chungnam AI Image Studio</small></div></div>
+    <label class="langpick" for="langSelect"><span id="langLabel">Language</span><select id="langSelect"></select></label>
+  </header>
+  <section class="panel" aria-live="polite">
+    <div class="progress-wrap"><div class="progress-head"><span id="stepLabel"></span><span id="stepCount"></span></div><div class="progress"><i id="bar"></i></div></div>
+    <div class="content" id="steps"></div>
+  </section>
+  <p class="footer">Chungnam Software Education Experience Center · KNUE Global Education Leadership visit · 16 October 2026</p>
+</main>
+
+<script>
+/* UI index: 0 langTitle 1 langDesc 2 hDir 3 dDir 4 hSubj 5 dSubj 6 hStyle 7 dStyle 8 hColor 9 hMood 10 dColor
+   11 hUse 12 dUse 13 hDone 14 dDone 15 detailLabel 16 detailPh 17 back 18 next 19 finish 20 pLocal 21 pEn
+   22 copy 23 copied 24 canva 25 restart 26 note 27 trNote 28 stepLabels 29 language
+   tpl: 0 Scene 1 Composition 2 Lighting 3 Colors 4 Style 5 Output 6 spaceS 7 lightS 8 outS 9 detail */
+const I18N = {};
+I18N.en = {
+ ui:["Choose your language","You can change it anytime at the top.","What story will your image tell?","Pick the idea behind your picture.","Choose the main subject","One clear symbol makes the message strong.","Choose an art style","Decide how the surface, depth and space will look.","Choose colors","Choose a mood","Colors and feeling are written into the prompt.","Where will you use it?","The layout and safe space change with the use.","Your prompt is ready","Copy it and paste it into Canva AI.","Add a detail from your country (optional)","e.g., a ger on the green steppe","Back","Next","Make my prompt","Prompt in your language","English prompt (best for image AI)","Copy","Copied!","Open Canva","Start over","In Canva, open Canva AI or Magic Media and paste the prompt. Add titles and names later with the text tool.","","Direction|Subject|Style|Color & mood|Use|Prompt","Language"],
+ dirs:[["The value of education","Learning, growth and trust in one symbol"],["My education journey","Warm memories from schools and people"],["The future of education","People, places and technology connected"]],
+ subs:[["Book and sprout","A green sprout growing out of an open book"],["Path of learning","A gentle path leading to a soft light far away"],["Tree of togetherness","One tree growing from roots that hold each other"],["Lamp of knowledge","A small lamp lighting a quiet desk at night"],["My first classroom","A sunny classroom with a tree outside the window"],["A student's letter","A handwritten letter and a small wildflower on a desk"],["The road to school","Children walking together on a morning road to school"],["Friends from many countries","Hands from many countries placing books on one table"],["Bridge of connection","A bridge of light joining two places"],["Global learning network","A globe wrapped in glowing lines that link schools"],["Technology and sprout","A sprout growing inside a round technology frame"],["New horizon","Sunrise over the horizon with thin data lines in the sky"]],
+ styles:[["Poster key visual","One symbol, wide empty space, clear order"],["Editorial photo","Natural, realistic documentary photograph"],["Modern watercolor","Soft watercolor washes with thin ink lines"],["Minimal 3D","Matte 3D objects with soft rounded space"]],
+ pals:[["Chungnam signature","Blue 60% · White 30% · Green and orange 10%"],["Forum navy","Navy 60% · Blue 30% · Gold 10%"],["Future teal","Deep teal 60% · Teal 30% · Mint 10%"],["Warm memories","Brown 60% · Cream 30% · Apricot 10%"]],
+ moods:[["Trust and balance","Calm, level and steady"],["Insight and depth","Light gathering in one direction, quiet depth"],["Warm connection","Soft curves, close distance, gentle light"],["Bold vision","Rising lines and an open horizon"]],
+ uses:[["Mug","Subject in the middle 55%, 18% safe margin at the edges"],["Report cover","Subject in the lower 60%, top 30% left free for a title"],["Event visual","Subject on the right 60%, left 30% free for event details"],["Social media card","Simple shapes that read well on a small screen"]],
+ tpl:["Scene","Composition","Lighting","Colors","Style","Output","Leave about 30% of the picture as calm empty space.","Soft daylight from the upper left, gentle shadows, clear depth.","Square image. No letters or words inside the picture. AR 1:1","Detail from my country"]
+};
+I18N.ko = {
+ ui:["언어를 선택하세요","위쪽 메뉴에서 언제든 바꿀 수 있어요.","어떤 이야기를 그림으로 만들까요?","그림에 담을 생각을 고르세요.","중심 소재를 고르세요","하나의 상징이 메시지를 또렷하게 해요.","표현 방식을 고르세요","표면, 깊이, 여백이 어떻게 보일지 정해요.","색을 고르세요","분위기를 고르세요","색과 느낌이 프롬프트에 함께 들어가요.","어디에 사용할까요?","용도에 따라 배치와 여백이 달라져요.","프롬프트가 완성되었어요","복사해서 캔바 AI에 붙여 넣으세요.","우리나라의 디테일 더하기 (선택)","예: 초록 초원 위의 게르","이전","다음","프롬프트 만들기","내 언어 프롬프트","영어 프롬프트 (이미지 AI에 가장 잘 맞아요)","복사","복사됨!","캔바 열기","처음부터","캔바에서 Canva AI 또는 Magic Media를 열고 프롬프트를 붙여 넣으세요. 제목과 이름은 나중에 텍스트 도구로 넣어요.","","방향|소재|표현|색·분위기|활용|완성","언어"],
+ dirs:[["교육의 가치","배움·성장·신뢰를 하나의 상징으로"],["나의 교육 여정","학교와 사람에 대한 따뜻한 기억"],["미래교육 비전","사람·지역·기술이 연결되는 모습"]],
+ subs:[["책과 새싹","펼친 책에서 자라나는 초록 새싹"],["배움의 길","멀리 부드러운 빛으로 이어지는 완만한 길"],["함께 자라는 나무","서로 맞잡은 뿌리에서 자라는 한 그루 나무"],["지식의 등불","고요한 밤 책상을 밝히는 작은 등불"],["나의 첫 교실","창밖에 나무가 보이는 햇살 가득한 교실"],["제자의 손편지","책상 위 손편지와 작은 들꽃"],["학교 가는 길","아침 등굣길을 함께 걷는 아이들"],["여러 나라의 친구들","여러 나라의 손이 한 탁자 위에 책을 올려놓는 모습"],["연결의 다리","두 공간을 잇는 빛의 다리"],["세계 배움 네트워크","학교들을 잇는 빛나는 선이 감싼 지구"],["기술과 새싹","둥근 기술 구조 안에서 자라는 새싹"],["새로운 수평선","하늘에 얇은 데이터 곡선이 흐르는 수평선 위 일출"]],
+ styles:[["정책 키비주얼","하나의 상징, 넓은 여백, 분명한 위계"],["에디토리얼 사진","자연스럽고 사실적인 다큐멘터리 사진"],["현대 수채화","부드러운 수채 번짐과 얇은 먹선"],["미니멀 3D","매트한 3D 오브제와 부드러운 공간감"]],
+ pals:[["충남교육 시그니처","블루 60% · 백색 30% · 그린과 오렌지 10%"],["정책 포럼 네이비","네이비 60% · 블루 30% · 골드 10%"],["미래교육 청록","딥 틸 60% · 청록 30% · 민트 10%"],["함께한 시간","브라운 60% · 미색 30% · 살구빛 10%"]],
+ moods:[["신뢰와 균형","차분하고 수평적이며 안정적인"],["통찰과 깊이","한 방향으로 모이는 빛, 고요한 깊이"],["따뜻한 연결","부드러운 곡선, 가까운 거리, 온화한 빛"],["진취적 비전","상승하는 선과 열린 수평선"]],
+ uses:[["머그컵","중앙 55%에 소재, 가장자리 18% 안전 여백"],["보고서 표지","하단 60%에 소재, 상단 30%는 제목 공간"],["행사 비주얼","우측 60%에 소재, 좌측 30%는 행사 정보 공간"],["SNS 카드","작은 화면에서도 잘 보이는 단순한 형태"]],
+ tpl:["장면","구도","조명","색상","표현","출력","화면의 약 30%는 고요한 여백으로 둔다.","좌측 상단의 부드러운 주광, 은은한 그림자, 또렷한 공간감.","정사각형 이미지. 이미지 안에는 글자를 넣지 않는다. AR 1:1","우리나라의 디테일"]
+};
+I18N.fr = {
+ ui:["Choisissez votre langue","Vous pouvez la changer à tout moment en haut.","Quelle histoire votre image va-t-elle raconter ?","Choisissez l'idée de votre image.","Choisissez le sujet principal","Un symbole clair rend le message fort.","Choisissez un style","Décidez de la surface, de la profondeur et de l'espace.","Choisissez les couleurs","Choisissez une ambiance","Les couleurs et l'ambiance sont ajoutées au prompt.","Où allez-vous l'utiliser ?","La mise en page s'adapte à l'usage.","Votre prompt est prêt","Copiez-le et collez-le dans Canva IA.","Ajoutez un détail de votre pays (facultatif)","ex. : un marché coloré d'Abidjan","Retour","Suivant","Créer mon prompt","Prompt dans votre langue","Prompt en anglais (idéal pour l'IA d'images)","Copier","Copié !","Ouvrir Canva","Recommencer","Dans Canva, ouvrez Canva IA ou Magic Media et collez le prompt. Ajoutez ensuite les titres et les noms avec l'outil texte.","Cette traduction a été préparée avec l'IA. Si un mot semble faux, dites-le au formateur.","Direction|Sujet|Style|Couleurs et ambiance|Usage|Prompt","Langue"],
+ dirs:[["La valeur de l'éducation","Apprendre, grandir et la confiance en un symbole"],["Mon parcours éducatif","Souvenirs chaleureux d'écoles et de personnes"],["L'avenir de l'éducation","Personnes, lieux et technologies connectés"]],
+ subs:[["Livre et pousse","Une pousse verte qui sort d'un livre ouvert"],["Chemin d'apprentissage","Un chemin doux qui mène vers une lumière lointaine"],["Arbre de la solidarité","Un arbre qui pousse sur des racines entrelacées"],["Lampe du savoir","Une petite lampe qui éclaire un bureau calme la nuit"],["Ma première classe","Une classe ensoleillée avec un arbre devant la fenêtre"],["La lettre d'un élève","Une lettre manuscrite et une petite fleur sauvage sur un bureau"],["Le chemin de l'école","Des enfants qui marchent ensemble vers l'école le matin"],["Amis de nombreux pays","Des mains de nombreux pays posant des livres sur une même table"],["Pont de connexion","Un pont de lumière qui relie deux lieux"],["Réseau mondial d'apprentissage","Un globe entouré de lignes lumineuses qui relient des écoles"],["Technologie et pousse","Une pousse qui grandit dans un cadre technologique rond"],["Nouvel horizon","Lever de soleil sur l'horizon avec de fines lignes de données dans le ciel"]],
+ styles:[["Affiche visuelle","Un symbole, beaucoup d'espace vide, un ordre clair"],["Photo éditoriale","Photo documentaire naturelle et réaliste"],["Aquarelle moderne","Lavis d'aquarelle doux et fins traits d'encre"],["3D minimaliste","Objets 3D mats dans un espace doux"]],
+ pals:[["Signature Chungnam","Bleu 60 % · Blanc 30 % · Vert et orange 10 %"],["Marine forum","Marine 60 % · Bleu 30 % · Or 10 %"],["Sarcelle d'avenir","Sarcelle foncé 60 % · Sarcelle 30 % · Menthe 10 %"],["Souvenirs chaleureux","Brun 60 % · Crème 30 % · Abricot 10 %"]],
+ moods:[["Confiance et équilibre","Calme, horizontal et stable"],["Réflexion et profondeur","Lumière qui converge, profondeur silencieuse"],["Lien chaleureux","Courbes douces, proximité, lumière tendre"],["Vision audacieuse","Lignes montantes et horizon ouvert"]],
+ uses:[["Tasse","Sujet au centre (55 %), marge de sécurité de 18 % sur les bords"],["Couverture de rapport","Sujet dans les 60 % du bas, 30 % du haut libres pour un titre"],["Visuel d'événement","Sujet sur les 60 % de droite, 30 % de gauche libres pour les infos"],["Carte réseaux sociaux","Formes simples, lisibles sur un petit écran"]],
+ tpl:["Scène","Composition","Lumière","Couleurs","Style","Format","Laisser environ 30 % de l'image en espace vide et calme.","Lumière du jour douce venant du haut à gauche, ombres légères, profondeur nette.","Image carrée. Aucune lettre ni aucun mot dans l'image. AR 1:1","Détail de mon pays"]
+};
+I18N.pt = {
+ ui:["Escolha o seu idioma","Pode mudar a qualquer momento no topo.","Que história a sua imagem vai contar?","Escolha a ideia da sua imagem.","Escolha o tema principal","Um símbolo claro torna a mensagem forte.","Escolha um estilo","Decida como serão a superfície, a profundidade e o espaço.","Escolha as cores","Escolha um ambiente","As cores e o ambiente entram no prompt.","Onde vai usar?","O layout muda conforme o uso.","O seu prompt está pronto","Copie e cole no Canva IA.","Acrescente um detalhe do seu país (opcional)","ex.: uma casa tradicional de Timor-Leste","Voltar","Seguinte","Criar o meu prompt","Prompt no seu idioma","Prompt em inglês (melhor para IA de imagem)","Copiar","Copiado!","Abrir o Canva","Recomeçar","No Canva, abra o Canva IA ou o Magic Media e cole o prompt. Acrescente títulos e nomes depois com a ferramenta de texto.","Esta tradução foi preparada com IA. Se alguma palavra parecer errada, diga ao formador.","Direção|Tema|Estilo|Cores e ambiente|Uso|Prompt","Idioma"],
+ dirs:[["O valor da educação","Aprender, crescer e confiar num só símbolo"],["O meu percurso na educação","Memórias calorosas de escolas e pessoas"],["O futuro da educação","Pessoas, lugares e tecnologia ligados"]],
+ subs:[["Livro e rebento","Um rebento verde a crescer de um livro aberto"],["Caminho da aprendizagem","Um caminho suave que leva a uma luz distante"],["Árvore da união","Uma árvore que cresce de raízes entrelaçadas"],["Lâmpada do saber","Uma pequena lâmpada que ilumina uma secretária tranquila à noite"],["A minha primeira sala de aula","Uma sala de aula com sol e uma árvore à janela"],["A carta de um aluno","Uma carta escrita à mão e uma pequena flor silvestre numa mesa"],["O caminho para a escola","Crianças a caminhar juntas para a escola de manhã"],["Amigos de muitos países","Mãos de muitos países a pôr livros numa só mesa"],["Ponte de ligação","Uma ponte de luz que une dois lugares"],["Rede global de aprendizagem","Um globo envolvido por linhas luminosas que ligam escolas"],["Tecnologia e rebento","Um rebento a crescer dentro de uma estrutura tecnológica redonda"],["Novo horizonte","Nascer do sol no horizonte com finas linhas de dados no céu"]],
+ styles:[["Cartaz visual","Um símbolo, muito espaço vazio, ordem clara"],["Fotografia editorial","Fotografia documental natural e realista"],["Aguarela moderna","Manchas suaves de aguarela com finas linhas de tinta"],["3D minimalista","Objetos 3D mate num espaço suave"]],
+ pals:[["Assinatura Chungnam","Azul 60% · Branco 30% · Verde e laranja 10%"],["Azul-marinho fórum","Azul-marinho 60% · Azul 30% · Dourado 10%"],["Verde-azulado do futuro","Verde-azulado escuro 60% · Verde-azulado 30% · Menta 10%"],["Memórias calorosas","Castanho 60% · Creme 30% · Damasco 10%"]],
+ moods:[["Confiança e equilíbrio","Calmo, nivelado e estável"],["Reflexão e profundidade","Luz que converge, profundidade serena"],["Ligação calorosa","Curvas suaves, proximidade, luz gentil"],["Visão ousada","Linhas ascendentes e horizonte aberto"]],
+ uses:[["Caneca","Tema no centro (55%), margem de segurança de 18% nas bordas"],["Capa de relatório","Tema nos 60% de baixo, 30% de cima livres para o título"],["Visual de evento","Tema nos 60% à direita, 30% à esquerda livres para informações"],["Cartão para redes sociais","Formas simples que se leem bem num ecrã pequeno"]],
+ tpl:["Cena","Composição","Iluminação","Cores","Estilo","Saída","Deixar cerca de 30% da imagem como espaço vazio e calmo.","Luz do dia suave vinda do canto superior esquerdo, sombras leves, profundidade nítida.","Imagem quadrada. Sem letras nem palavras dentro da imagem. AR 1:1","Detalhe do meu país"]
+};
+I18N.tet = {
+ ui:["Hili ita-nia lian","Ita bele troka iha leten bainhira de'it.","Istória saida mak ita-nia imajen sei konta?","Hili ideia ba ita-nia imajen.","Hili asuntu prinsipál","Simbolu ida ne'ebé klaru halo mensajen forte.","Hili estilu","Deside oinsá superfísie, kle'an no espasu sei hatudu.","Hili kór","Hili sentimentu","Kór no sentimentu tama iha prompt.","Ita sei uza iha ne'ebé?","Layout troka tuir uzu.","Ita-nia prompt prontu ona","Kopia no kola iha Canva AI.","Aumenta detalle ida husi ita-nia rai (opsionál)","ez.: uma lulik iha foho","Fila","Tuir mai","Halo ha'u-nia prompt","Prompt iha ita-nia lian","Prompt iha lian Inglés (di'ak liu ba IA imajen)","Kopia","Kopia ona!","Loke Canva","Hahú fali","Iha Canva, loke Canva AI ka Magic Media no kola prompt. Aumenta títulu no naran depois ho ferramenta testu.","Tradusaun ne'e prepara ho IA. Se liafuan ruma la los, favór hatete ba formadór.","Diresaun|Asuntu|Estilu|Kór no sentimentu|Uzu|Prompt","Lian"],
+ dirs:[["Valór edukasaun nian","Aprende, buras no fiar iha simbolu ida"],["Ha'u-nia dalan edukasaun","Memória manas husi eskola no ema"],["Futuru edukasaun nian","Ema, fatin no teknolojia liga malu"]],
+ subs:[["Livru no ai-tubu","Ai-tubu matak ida moris husi livru ne'ebé loke"],["Dalan aprendizajen","Dalan maran ida ne'ebé lori ba naroman dook"],["Ai-hun hamutuk","Ai-hun ida moris husi abut ne'ebé kaer malu"],["Lampada matenek","Lampada ki'ik ida naroman meza ida kalan"],["Ha'u-nia sala aula dahuluk","Sala aula ho loron no ai-hun ida iha janela li'ur"],["Karta husi estudante","Karta hakerek ho liman no ai-funan ki'ik iha meza"],["Dalan ba eskola","Labarik sira la'o hamutuk ba eskola dadeer"],["Belun husi nasaun barak","Liman husi nasaun barak tau livru iha meza ida"],["Ponte ligasaun","Ponte naroman ida liga fatin rua"],["Rede aprendizajen mundiál","Globu ida ho liña naroman ne'ebé liga eskola sira"],["Teknolojia no ai-tubu","Ai-tubu ida moris iha estrutura teknolojia kabuar"],["Orizonte foun","Loron sa'e iha orizonte ho liña dadus kanek iha lalehan"]],
+ styles:[["Poster vizuál","Simbolu ida, espasu mamuk boot, orden klaru"],["Foto editoriál","Foto dokumentáriu naturál no reál"],["Aguarela modernu","Aguarela maman ho liña tinta kanek"],["3D minimalista","Objetu 3D mate iha espasu maman"]],
+ pals:[["Asinatura Chungnam","Azul 60% · Mutin 30% · Matak no laranja 10%"],["Azul-marinu fórum","Azul-marinu 60% · Azul 30% · Osan-mean 10%"],["Verde-azul futuru","Verde-azul nakukun 60% · Verde-azul 30% · Menta 10%"],["Memória manas","Kafé 60% · Kreme 30% · Damasku 10%"]],
+ moods:[["Fiar no ekilíbriu","Kalma, nivel no estável"],["Hanoin no kle'an","Naroman ne'ebé halibur, kle'an nonok"],["Ligasaun manas","Kurva maman, besik, naroman kmaan"],["Vizaun aten-brani","Liña ne'ebé sa'e no orizonte nakloke"]],
+ uses:[["Kopu","Asuntu iha klaran 55%, margen seguru 18% iha ninin"],["Kapa relatóriu","Asuntu iha 60% okos, 30% leten mamuk ba títulu"],["Vizuál eventu","Asuntu iha 60% loos, 30% karuk mamuk ba informasaun"],["Kartaun rede sosiál","Forma simples ne'ebé lee di'ak iha ekran ki'ik"]],
+ tpl:["Sena","Kompozisaun","Naroman","Kór","Estilu","Rezultadu","Husik imajen nia 30% hanesan espasu mamuk no kalma.","Naroman loron maman husi leten karuk, mahon kmaan, kle'an klaru.","Imajen kuadradu. La iha letra ka liafuan iha imajen laran. AR 1:1","Detalle husi ha'u-nia rai"]
+};
+I18N.es = {
+ ui:["Elige tu idioma","Puedes cambiarlo cuando quieras arriba.","¿Qué historia contará tu imagen?","Elige la idea de tu imagen.","Elige el tema principal","Un símbolo claro hace fuerte el mensaje.","Elige un estilo","Decide cómo se verán la superficie, la profundidad y el espacio.","Elige los colores","Elige un ambiente","Los colores y el ambiente se escriben en el prompt.","¿Dónde lo vas a usar?","El diseño cambia según el uso.","Tu prompt está listo","Cópialo y pégalo en Canva IA.","Agrega un detalle de tu país (opcional)","ej.: montañas cafeteras de Colombia","Atrás","Siguiente","Crear mi prompt","Prompt en tu idioma","Prompt en inglés (mejor para IA de imágenes)","Copiar","¡Copiado!","Abrir Canva","Empezar de nuevo","En Canva, abre Canva IA o Magic Media y pega el prompt. Agrega títulos y nombres después con la herramienta de texto.","Esta traducción se preparó con IA. Si una palabra suena mal, díselo al instructor.","Dirección|Tema|Estilo|Color y ambiente|Uso|Prompt","Idioma"],
+ dirs:[["El valor de la educación","Aprender, crecer y confiar en un solo símbolo"],["Mi camino en la educación","Recuerdos cálidos de escuelas y personas"],["El futuro de la educación","Personas, lugares y tecnología conectados"]],
+ subs:[["Libro y brote","Un brote verde que crece de un libro abierto"],["Camino del aprendizaje","Un camino suave que lleva a una luz lejana"],["Árbol de la unión","Un árbol que crece de raíces entrelazadas"],["Lámpara del saber","Una pequeña lámpara que ilumina un escritorio tranquilo de noche"],["Mi primera aula","Un aula soleada con un árbol junto a la ventana"],["La carta de un estudiante","Una carta escrita a mano y una pequeña flor silvestre sobre un escritorio"],["El camino a la escuela","Niños que caminan juntos a la escuela por la mañana"],["Amigos de muchos países","Manos de muchos países que ponen libros sobre una misma mesa"],["Puente de conexión","Un puente de luz que une dos lugares"],["Red global de aprendizaje","Un globo rodeado de líneas luminosas que conectan escuelas"],["Tecnología y brote","Un brote que crece dentro de una estructura tecnológica redonda"],["Nuevo horizonte","Amanecer sobre el horizonte con finas líneas de datos en el cielo"]],
+ styles:[["Cartel visual","Un símbolo, mucho espacio vacío, orden claro"],["Foto editorial","Fotografía documental natural y realista"],["Acuarela moderna","Manchas suaves de acuarela con finas líneas de tinta"],["3D minimalista","Objetos 3D mate en un espacio suave"]],
+ pals:[["Firma de Chungnam","Azul 60 % · Blanco 30 % · Verde y naranja 10 %"],["Azul marino de foro","Azul marino 60 % · Azul 30 % · Dorado 10 %"],["Verde azulado del futuro","Verde azulado oscuro 60 % · Verde azulado 30 % · Menta 10 %"],["Recuerdos cálidos","Marrón 60 % · Crema 30 % · Albaricoque 10 %"]],
+ moods:[["Confianza y equilibrio","Tranquilo, nivelado y estable"],["Reflexión y profundidad","Luz que converge, profundidad serena"],["Conexión cálida","Curvas suaves, cercanía, luz amable"],["Visión audaz","Líneas que suben y un horizonte abierto"]],
+ uses:[["Taza","Tema en el centro (55 %), margen de seguridad del 18 % en los bordes"],["Portada de informe","Tema en el 60 % inferior, 30 % superior libre para el título"],["Visual de evento","Tema en el 60 % derecho, 30 % izquierdo libre para información"],["Tarjeta para redes sociales","Formas simples que se leen bien en una pantalla pequeña"]],
+ tpl:["Escena","Composición","Iluminación","Colores","Estilo","Salida","Deja cerca del 30 % de la imagen como espacio vacío y tranquilo.","Luz de día suave desde arriba a la izquierda, sombras suaves, profundidad clara.","Imagen cuadrada. Sin letras ni palabras dentro de la imagen. AR 1:1","Detalle de mi país"]
+};
+I18N.mn = {
+ ui:["Хэлээ сонгоно уу","Дээд цэснээс хүссэн үедээ сольж болно.","Таны зураг ямар түүх өгүүлэх вэ?","Зургийнхаа санааг сонгоно уу.","Гол сэдвээ сонгоно уу","Нэг тод бэлгэдэл мессежийг хүчтэй болгоно.","Зургийн хэв маягаа сонгоно уу","Гадаргуу, гүн, орон зай хэрхэн харагдахыг шийднэ.","Өнгөө сонгоно уу","Уур амьсгалаа сонгоно уу","Өнгө ба мэдрэмж промптод орно.","Хаана ашиглах вэ?","Хэрэглээнээс хамаарч байршил өөрчлөгдөнө.","Таны промпт бэлэн боллоо","Хуулж аваад Canva AI-д буулгана уу.","Өөрийн орны нэг онцлог нэмэх (заавал биш)","ж: ногоон тал дээрх гэр","Буцах","Дараах","Промпт үүсгэх","Таны хэл дээрх промпт","Англи промпт (зургийн AI-д хамгийн тохиромжтой)","Хуулах","Хуулсан!","Canva нээх","Дахин эхлэх","Canva-д Canva AI эсвэл Magic Media-г нээж промптоо буулгана уу. Гарчиг, нэрийг дараа нь текст хэрэгслээр нэмнэ.","Энэ орчуулгыг AI-ийн тусламжтай бэлтгэсэн. Үг буруу санагдвал багшдаа хэлээрэй.","Чиглэл|Сэдэв|Хэв маяг|Өнгө ба уур амьсгал|Хэрэглээ|Промпт","Хэл"],
+ dirs:[["Боловсролын үнэ цэнэ","Суралцах, өсөх, итгэлцлийг нэг бэлгэдлээр"],["Миний боловсролын зам","Сургууль, хүмүүсийн тухай дулаан дурсамж"],["Боловсролын ирээдүй","Хүн, газар, технологи холбогдсон нь"]],
+ subs:[["Ном ба нахиа","Нээлттэй номноос ургаж буй ногоон нахиа"],["Суралцахуйн зам","Алсын зөөлөн гэрэл рүү хөтлөх зам"],["Хамтын мод","Бие биеэ тэвэрсэн үндэснээс ургасан мод"],["Мэдлэгийн дэнлүү","Шөнийн нам гүм ширээг гэрэлтүүлэх жижиг дэнлүү"],["Миний анхны анги","Цонхны гадна модтой, нартай анги"],["Сурагчийн захидал","Ширээн дээрх гараар бичсэн захидал ба жижиг зэрлэг цэцэг"],["Сургууль руу явах зам","Өглөө хамтдаа сургууль руу алхаж буй хүүхдүүд"],["Олон орны найзууд","Олон орны гарууд нэг ширээн дээр ном тавьж буй нь"],["Холбох гүүр","Хоёр газрыг холбосон гэрлийн гүүр"],["Дэлхийн суралцах сүлжээ","Сургуулиудыг холбосон гэрэлт шугамаар ороосон бөмбөрцөг"],["Технологи ба нахиа","Дугуй технологийн бүтэц дотор ургаж буй нахиа"],["Шинэ тэнгэрийн хаяа","Тэнгэрт нарийн өгөгдлийн шугамтай нар мандах үе"]],
+ styles:[["Постер зураг","Нэг бэлгэдэл, өргөн хоосон зай, тодорхой дараалал"],["Сэтгүүлийн гэрэл зураг","Байгалийн, бодит баримтат гэрэл зураг"],["Орчин үеийн усан будаг","Зөөлөн усан будаг ба нарийн бэхэн зураас"],["Минимал 3D","Зөөлөн орон зай дахь гялалзахгүй 3D биетүүд"]],
+ pals:[["Чүннам онцлог","Цэнхэр 60% · Цагаан 30% · Ногоон ба улбар шар 10%"],["Форумын хар хөх","Хар хөх 60% · Цэнхэр 30% · Алт 10%"],["Ирээдүйн ногоовтор хөх","Бараан ногоовтор хөх 60% · Ногоовтор хөх 30% · Гаа 10%"],["Дулаан дурсамж","Бор 60% · Цөцгийн өнгө 30% · Чангаанз 10%"]],
+ moods:[["Итгэл ба тэнцвэр","Тайван, тэгш, тогтвортой"],["Гүн бодол","Нэг зүгт цугларах гэрэл, нам гүм гүн"],["Дулаан холбоо","Зөөлөн муруй, ойр зай, намуухан гэрэл"],["Зоримог алсын хараа","Өгсөх шугам ба нээлттэй тэнгэрийн хаяа"]],
+ uses:[["Аяга","Сэдэв төвийн 55%-д, ирмэгт 18% аюулгүй зай"],["Тайлангийн нүүр","Сэдэв доод 60%-д, дээд 30% гарчигт"],["Арга хэмжээний зураг","Сэдэв баруун 60%-д, зүүн 30% мэдээлэлд"],["Сошиал медиа карт","Жижиг дэлгэцэнд ч тод харагдах энгийн хэлбэр"]],
+ tpl:["Дүр зураг","Найруулга","Гэрэлтүүлэг","Өнгө","Хэв маяг","Гаралт","Зургийн 30 орчим хувийг тайван хоосон зай болгон үлдээнэ.","Зүүн дээд талаас зөөлөн өдрийн гэрэл, намуухан сүүдэр, тод гүн.","Дөрвөлжин зураг. Зурган дотор үсэг, үг байхгүй. AR 1:1","Манай орны онцлог"]
+};
+I18N.dv = {
+ ui:["ބަސް ހޮވާ","މަތީގައިވާ މެނޫއިން ކޮންމެ ވަގުތެއްގައި ބަދަލުކުރެވޭނެ.","ތިބާގެ ފޮޓޯއިން ދައްކާނީ ކޮން ވާހަކައެއް؟","ފޮޓޯގެ ޚިޔާލު ހޮވާ.","މައި މައުޟޫޢު ހޮވާ","ސާފު ރަމްޒެއްގެ ސަބަބުން މެސެޖު ވަރުގަދަވޭ.","ސްޓައިލެއް ހޮވާ","ފޮޓޯ ފެންނާނެ ގޮތް ނިންމާ.","ކުލަ ހޮވާ","މޫޑު ހޮވާ","ކުލައާއި މޫޑު ޕްރޮމްޕްޓަށް ލިޔެވޭނެ.","ބޭނުންކުރާނީ ކޮންތާކު؟","ބޭނުމާ އެއްގޮތަށް ލޭއައުޓް ބަދަލުވާނެ.","ތިބާގެ ޕްރޮމްޕްޓް ތައްޔާރު","ކޮޕީކޮށް Canva AI ގައި ޕޭސްޓް ކުރޭ.","ތިބާގެ ޤައުމުގެ ތަފްޞީލެއް އިތުރުކުރޭ (އިޚްތިޔާރީ)","މިސާލު: ފެހި ރަށަކާއި ނޫ ކަނޑު","ފަހަތަށް","ކުރިއަށް","ޕްރޮމްޕްޓް ހަދާ","ތިބާގެ ބަހުން ޕްރޮމްޕްޓް","އިނގިރޭސި ޕްރޮމްޕްޓް (ފޮޓޯ AI އަށް އެންމެ ރަނގަޅު)","ކޮޕީ","ކޮޕީ ވެއްޖެ!","Canva ހުޅުވާ","އަލުން ފަށާ","Canva ގައި Canva AI ނުވަތަ Magic Media ހުޅުވައި ޕްރޮމްޕްޓް ޕޭސްޓް ކުރޭ. ސުރުޚީއާއި ނަންތައް ފަހުން ޓެކްސްޓް ޓޫލުން އިތުރުކުރޭ.","މި ތަރުޖަމާ ތައްޔާރުކުރީ AI ގެ އެހީގައި. ބަހެއް ރަނގަޅު ނޫންކަމަށް ހީވާނަމަ ޓީޗަރަށް ބުނެދީ.","ދިމާ|މައުޟޫޢު|ސްޓައިލް|ކުލަ އަދި މޫޑު|ބޭނުން|ޕްރޮމްޕްޓް","ބަސް"],
+ dirs:[["ތައުލީމުގެ އަގު","ދަސްކުރުމާއި ކުރިއެރުމާއި އިތުބާރު އެއް ރަމްޒަކުން"],["އަހަރެންގެ ތައުލީމީ ދަތުރު","ސްކޫލުތަކާއި މީހުންގެ ހޫނު ހަނދާން"],["ތައުލީމުގެ މުސްތަޤުބަލު","މީހުންނާއި ތަންތަނާއި ޓެކްނޮލޮޖީ ގުޅިފައި"]],
+ subs:[["ފޮތާއި ގަހުގެ ފަޅި","ހުޅުވިފައިވާ ފޮތަކުން ފެޅޭ ފެހި ގަހެއް"],["ދަސްކުރުމުގެ މަގު","ދުރުގައިވާ މަޑު އަލިކަމަކަށް ދާ މަގެއް"],["އެކުގައި ހެދޭ ގަސް","ގުޅިފައިވާ މުލުތަކުން ހެދޭ ގަހެއް"],["ޢިލްމުގެ ބައްތި","ރޭގަނޑު މޭޒެއް އަލިކުރާ ކުޑަ ބައްތިއެއް"],["އަހަރެންގެ ފުރަތަމަ ކްލާސްރޫމް","ދޮރުކޮޅުން ގަހެއް ފެންނަ އިރުއަލި ކްލާސްރޫމެއް"],["ދަރިވަރެއްގެ ސިޓީ","މޭޒުމަތީގައި އަތުން ލިޔުނު ސިޓީއަކާއި ކުޑަ މާއެއް"],["ސްކޫލަށް ދާ މަގު","ހެނދުނު އެކުގައި ސްކޫލަށް ހިނގާ ކުދިން"],["ގިނަ ޤައުމުތަކުގެ ރަޙުމަތްތެރިން","ގިނަ ޤައުމުތަކުގެ އަތްތަކުން އެއް މޭޒެއްގެ މަތީގައި ފޮތް ބަހައްޓަނީ"],["ގުޅުވާ ބުރިއްޖެ","ދެ ތަނެއް ގުޅުވާ އަލިކަމުގެ ބުރިއްޖެއް"],["ދުނިޔޭގެ ދަސްކުރުމުގެ ނެޓްވޯކް","ސްކޫލުތައް ގުޅުވާ އަލި ރޮނގުތަކުން ވަށާލާފައިވާ ދުނިޔެ"],["ޓެކްނޮލޮޖީ އާއި ގަސް","ވަށް ޓެކްނޮލޮޖީ ފްރޭމެއްގެ ތެރޭގައި ހެދޭ ގަހެއް"],["އާ އުފުން","އުޑުގައި ތުނި ޑޭޓާ ރޮނގުތަކާއެކު އުފުނުގައި އިރުއަރަނީ"]],
+ styles:[["ޕޯސްޓަރ ވިޝުއަލް","އެއް ރަމްޒު، ފުޅާ ހުސްޖާގަ، ސާފު ތަރުތީބު"],["އެޑިޓޯރިއަލް ފޮޓޯ","ޤުދުރަތީ، ހަޤީޤީ ޑޮކިއުމެންޓަރީ ފޮޓޯ"],["މޮޑަން ވޯޓަރކަލަރ","މަޑު ވޯޓަރކަލަރ އަދި ތުނި ތީންޓު ރޮނގު"],["މިނިމަލް 3D","މަޑު ޖާގައެއްގައި މެޓް 3D އެއްޗެހި"]],
+ pals:[["ޗުންނަމް ސިގްނޭޗަރ","ނޫ 60% · ހުދު 30% · ފެހި އަދި އޮރެންޖު 10%"],["ފޯރަމް ނޭވީ","ނޭވީ 60% · ނޫ 30% · ރަން 10%"],["މުސްތަޤުބަލުގެ ޓީލް","ގަދަ ޓީލް 60% · ޓީލް 30% · މިންޓް 10%"],["ހޫނު ހަނދާން","ދޮންމުށި 60% · ކްރީމް 30% · އެޕްރިކޮޓް 10%"]],
+ moods:[["އިތުބާރާއި ބެލެންސް","މަޑު، ހަމަ، ސާބިތު"],["ވިސްނުމާއި އަޑި","އެއް ފަރާތަކަށް އަލިކަން، މަޑު އަޑި"],["ހޫނު ގުޅުން","މަޑު ވަކަރު، ކައިރި، ނަރުމު އަލިކަން"],["ހިތްވަރުގަދަ ވިޝަން","މައްޗަށް ދާ ރޮނގުތަކާއި ހުޅުވިފައިވާ އުފުން"]],
+ uses:[["މަގް ތަށި","މެދު 55% ގައި މައުޟޫޢު، ކައިރީގައި 18% ސޭފް ޖާގަ"],["ރިޕޯޓް ކަވަރ","ތިރީ 60% ގައި މައުޟޫޢު، މަތީ 30% ސުރުޚީއަށް"],["އިވެންޓް ވިޝުއަލް","ކަނާތު 60% ގައި މައުޟޫޢު، ވާތު 30% މަޢުލޫމާތަށް"],["ސޯޝަލް މީޑިއާ ކާޑު","ކުޑަ ސްކްރީނުގައިވެސް ފެންނަ ސާދާ ސިފަތައް"]],
+ tpl:["މަންޒަރު","ތަރުތީބު","އަލިކަން","ކުލަ","ސްޓައިލް","ނަތީޖާ","ފޮޓޯގެ 30% ހާއްވަރު މަޑު ހުސްޖާގައެއްގެ ގޮތުގައި ދޫކޮށްލާ.","މަތީ ވާތުން މަޑު ދުވާލުގެ އަލިކަން، މަޑު ހިޔަނި، ސާފު އަޑި.","ހަތަރެސްކަނަށް ފޮޓޯ. ފޮޓޯގެ ތެރޭގައި އަކުރެއް ނުވަތަ ބަހެއް ނެތް. AR 1:1","އަހަރެންގެ ޤައުމުގެ ތަފްޞީލު"]
+};
+I18N.si = {
+ ui:["ඔබේ භාෂාව තෝරන්න","ඉහළ මෙනුවෙන් ඕනෑම වේලාවක වෙනස් කළ හැක.","ඔබේ රූපය කියන්නේ කුමන කතාවද?","ඔබේ රූපයේ අදහස තෝරන්න.","ප්‍රධාන විෂය තෝරන්න","පැහැදිලි සංකේතයක් පණිවිඩය ශක්තිමත් කරයි.","කලා ශෛලියක් තෝරන්න","මතුපිට, ගැඹුර සහ ඉඩ පෙනෙන ආකාරය තීරණය කරන්න.","වර්ණ තෝරන්න","මනෝභාවයක් තෝරන්න","වර්ණ සහ හැඟීම prompt එකට ඇතුළත් වේ.","ඔබ එය භාවිත කරන්නේ කොහේද?","භාවිතය අනුව පිරිසැලසුම වෙනස් වේ.","ඔබේ prompt එක සූදානම්","පිටපත් කර Canva AI තුළ අලවන්න.","ඔබේ රටෙන් විස්තරයක් එක් කරන්න (අනිවාර්ය නැත)","උදා: තේ වතු සහිත කඳුකරය","ආපසු","ඊළඟ","මගේ prompt එක සාදන්න","ඔබේ භාෂාවෙන් prompt එක","ඉංග්‍රීසි prompt එක (රූප AI සඳහා හොඳම)","පිටපත් කරන්න","පිටපත් විය!","Canva විවෘත කරන්න","නැවත අරඹන්න","Canva හි Canva AI හෝ Magic Media විවෘත කර prompt එක අලවන්න. මාතෘකා සහ නම් පසුව පෙළ මෙවලමෙන් එක් කරන්න.","මෙම පරිවර්තනය AI භාවිතයෙන් සකස් කරන ලදී. වචනයක් වැරදි යැයි හැඟේ නම් උපදේශකට කියන්න.","දිශාව|විෂය|ශෛලිය|වර්ණ සහ මනෝභාවය|භාවිතය|Prompt","භාෂාව"],
+ dirs:[["අධ්‍යාපනයේ වටිනාකම","ඉගෙනීම, වර්ධනය සහ විශ්වාසය එක් සංකේතයකින්"],["මගේ අධ්‍යාපන ගමන","පාසල් සහ මිනිසුන් පිළිබඳ උණුසුම් මතක"],["අධ්‍යාපනයේ අනාගතය","මිනිසුන්, ස්ථාන සහ තාක්ෂණය සම්බන්ධ වීම"]],
+ subs:[["පොත සහ පැළය","විවෘත පොතකින් වැඩෙන කොළ පැළයක්"],["ඉගෙනුම් මාවත","දුර ඇති මෘදු ආලෝකයකට යන මාවතක්"],["එකමුතු ගස","එකිනෙක අල්ලාගත් මුල්වලින් වැඩෙන ගසක්"],["දැනුමේ පහන","රාත්‍රියේ නිහඬ මේසයක් ආලෝකමත් කරන කුඩා පහනක්"],["මගේ පළමු පන්ති කාමරය","ජනේලයෙන් පිටත ගසක් ඇති හිරු එළිය පිරි පන්තියක්"],["සිසුවෙකුගේ ලිපිය","මේසය මත අතින් ලියූ ලිපියක් සහ කුඩා වල් මලක්"],["පාසලට යන මාවත","උදෑසන එකට පාසලට ඇවිදින දරුවන්"],["බොහෝ රටවල මිතුරන්","බොහෝ රටවල අත් එකම මේසයක් මත පොත් තබයි"],["සම්බන්ධතාවයේ පාලම","ස්ථාන දෙකක් යා කරන ආලෝක පාලමක්"],["ගෝලීය ඉගෙනුම් ජාලය","පාසල් යා කරන දීප්තිමත් රේඛාවලින් වට වූ ලෝක ගෝලයක්"],["තාක්ෂණය සහ පැළය","රවුම් තාක්ෂණ රාමුවක් තුළ වැඩෙන පැළයක්"],["නව ක්ෂිතිජය","අහසේ සියුම් දත්ත රේඛා සහිත ක්ෂිතිජයේ හිරු උදාව"]],
+ styles:[["පෝස්ටර් දර්ශනය","එක් සංකේතයක්, පුළුල් හිස් ඉඩ, පැහැදිලි පිළිවෙළ"],["සංස්කාරක ඡායාරූපය","ස්වාභාවික, යථාර්ථවාදී වාර්තා ඡායාරූපය"],["නූතන ජල වර්ණ","මෘදු ජල වර්ණ සහ සියුම් තීන්ත රේඛා"],["සරල 3D","මෘදු අවකාශයක මැට් 3D වස්තු"]],
+ pals:[["චුංනම් අනන්‍යතාව","නිල් 60% · සුදු 30% · කොළ සහ තැඹිලි 10%"],["සංසද තද නිල්","තද නිල් 60% · නිල් 30% · රන් 10%"],["අනාගත නිල්කොළ","තද නිල්කොළ 60% · නිල්කොළ 30% · මින්ට් 10%"],["උණුසුම් මතක","දුඹුරු 60% · ක්‍රීම් 30% · ඇප්‍රිකොට් 10%"]],
+ moods:[["විශ්වාසය සහ සමතුලිතතාවය","සන්සුන්, සමතලා, ස්ථාවර"],["අවබෝධය සහ ගැඹුර","එක් දිශාවකට එකතු වන ආලෝකය, නිහඬ ගැඹුර"],["උණුසුම් සම්බන්ධය","මෘදු වක්‍ර, සමීපත්වය, මෘදු ආලෝකය"],["නිර්භීත දැක්ම","ඉහළ යන රේඛා සහ විවෘත ක්ෂිතිජය"]],
+ uses:[["කෝප්පය","විෂය මැද 55% තුළ, දාරවල 18% ආරක්ෂිත ඉඩ"],["වාර්තා කවරය","විෂය පහළ 60% තුළ, ඉහළ 30% මාතෘකාවට"],["උත්සව දර්ශනය","විෂය දකුණු 60% තුළ, වම් 30% තොරතුරු සඳහා"],["සමාජ මාධ්‍ය කාඩ්පත","කුඩා තිරයේ පවා පැහැදිලි සරල හැඩ"]],
+ tpl:["දර්ශනය","සංයුතිය","ආලෝකය","වර්ණ","ශෛලිය","ප්‍රතිදානය","රූපයේ 30% පමණ සන්සුන් හිස් ඉඩක් ලෙස තබන්න.","ඉහළ වමේ සිට මෘදු දිවා ආලෝකය, මෘදු සෙවණැලි, පැහැදිලි ගැඹුර.","සමචතුරස්‍ර රූපයකි. රූපය තුළ අකුරු හෝ වචන නැත. AR 1:1","මගේ රටේ විස්තරය"]
+};
+I18N.ta = {
+ ui:["உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்","மேலே உள்ள மெனுவில் எப்போது வேண்டுமானாலும் மாற்றலாம்.","உங்கள் படம் எந்தக் கதையைச் சொல்லும்?","உங்கள் படத்தின் கருத்தைத் தேர்ந்தெடுக்கவும்.","முதன்மைப் பொருளைத் தேர்ந்தெடுக்கவும்","தெளிவான ஒரு சின்னம் செய்தியை வலுவாக்கும்.","கலை பாணியைத் தேர்ந்தெடுக்கவும்","மேற்பரப்பு, ஆழம், இடம் எப்படித் தெரியும் என்பதை முடிவு செய்யுங்கள்.","வண்ணங்களைத் தேர்ந்தெடுக்கவும்","மனநிலையைத் தேர்ந்தெடுக்கவும்","வண்ணங்களும் உணர்வும் prompt-இல் சேர்க்கப்படும்.","எங்கே பயன்படுத்துவீர்கள்?","பயன்பாட்டைப் பொறுத்து அமைப்பு மாறும்.","உங்கள் prompt தயார்","நகலெடுத்து Canva AI-இல் ஒட்டவும்.","உங்கள் நாட்டிலிருந்து ஒரு விவரத்தைச் சேர்க்கவும் (விருப்பம்)","எ.கா: தேயிலைத் தோட்ட மலைகள்","பின்","அடுத்து","என் prompt-ஐ உருவாக்கு","உங்கள் மொழியில் prompt","ஆங்கில prompt (பட AI-க்கு சிறந்தது)","நகலெடு","நகலெடுக்கப்பட்டது!","Canva-வைத் திற","மீண்டும் தொடங்கு","Canva-வில் Canva AI அல்லது Magic Media-வைத் திறந்து prompt-ஐ ஒட்டவும். தலைப்புகளையும் பெயர்களையும் பின்னர் உரைக் கருவியால் சேர்க்கவும்.","இந்த மொழிபெயர்ப்பு AI உதவியுடன் தயாரிக்கப்பட்டது. ஏதாவது சொல் தவறாகத் தோன்றினால் பயிற்றுநரிடம் சொல்லுங்கள்.","திசை|பொருள்|பாணி|வண்ணம் & மனநிலை|பயன்பாடு|Prompt","மொழி"],
+ dirs:[["கல்வியின் மதிப்பு","கற்றல், வளர்ச்சி, நம்பிக்கை ஒரே சின்னத்தில்"],["என் கல்விப் பயணம்","பள்ளிகள் மற்றும் மனிதர்களின் இனிய நினைவுகள்"],["கல்வியின் எதிர்காலம்","மனிதர்கள், இடங்கள், தொழில்நுட்பம் இணைதல்"]],
+ subs:[["புத்தகமும் முளையும்","திறந்த புத்தகத்திலிருந்து வளரும் பச்சை முளை"],["கற்றலின் பாதை","தொலைவில் உள்ள மென்மையான ஒளிக்குச் செல்லும் பாதை"],["ஒற்றுமை மரம்","ஒன்றையொன்று பிடித்த வேர்களிலிருந்து வளரும் மரம்"],["அறிவின் விளக்கு","இரவில் அமைதியான மேசையை ஒளிரச் செய்யும் சிறிய விளக்கு"],["என் முதல் வகுப்பறை","சன்னலுக்கு வெளியே மரம் உள்ள வெயில் நிறைந்த வகுப்பறை"],["மாணவரின் கடிதம்","மேசையில் கையால் எழுதிய கடிதமும் சிறிய காட்டுப் பூவும்"],["பள்ளிக்குச் செல்லும் பாதை","காலையில் சேர்ந்து பள்ளிக்கு நடக்கும் குழந்தைகள்"],["பல நாடுகளின் நண்பர்கள்","பல நாடுகளின் கைகள் ஒரே மேசையில் புத்தகங்களை வைக்கின்றன"],["இணைப்புப் பாலம்","இரண்டு இடங்களை இணைக்கும் ஒளிப் பாலம்"],["உலகக் கற்றல் வலையமைப்பு","பள்ளிகளை இணைக்கும் ஒளிரும் கோடுகளால் சூழப்பட்ட உலக உருண்டை"],["தொழில்நுட்பமும் முளையும்","வட்டமான தொழில்நுட்பச் சட்டகத்துக்குள் வளரும் முளை"],["புதிய அடிவானம்","வானில் மெல்லிய தரவுக் கோடுகளுடன் அடிவானத்தில் சூரிய உதயம்"]],
+ styles:[["போஸ்டர் காட்சி","ஒரு சின்னம், பரந்த வெற்றிடம், தெளிவான ஒழுங்கு"],["இதழியல் புகைப்படம்","இயல்பான, உண்மையான ஆவணப் புகைப்படம்"],["நவீன நீர்வண்ணம்","மென்மையான நீர்வண்ணமும் மெல்லிய மைக் கோடுகளும்"],["எளிய 3D","மென்மையான இடத்தில் பளபளப்பில்லாத 3D பொருட்கள்"]],
+ pals:[["சுங்நாம் அடையாளம்","நீலம் 60% · வெள்ளை 30% · பச்சை மற்றும் ஆரஞ்சு 10%"],["மன்றக் கருநீலம்","கருநீலம் 60% · நீலம் 30% · தங்கம் 10%"],["எதிர்கால நீலப்பச்சை","அடர் நீலப்பச்சை 60% · நீலப்பச்சை 30% · புதினா 10%"],["இனிய நினைவுகள்","பழுப்பு 60% · கிரீம் 30% · ஆப்ரிகாட் 10%"]],
+ moods:[["நம்பிக்கையும் சமநிலையும்","அமைதி, சமதளம், நிலைத்தன்மை"],["நுண்ணறிவும் ஆழமும்","ஒரே திசையில் குவியும் ஒளி, அமைதியான ஆழம்"],["இனிய இணைப்பு","மென்மையான வளைவுகள், நெருக்கம், மென்மையான ஒளி"],["துணிவான தொலைநோக்கு","உயரும் கோடுகளும் திறந்த அடிவானமும்"]],
+ uses:[["கோப்பை","பொருள் நடுவில் 55%, ஓரங்களில் 18% பாதுகாப்பு இடம்"],["அறிக்கை அட்டை","பொருள் கீழே 60%, மேலே 30% தலைப்புக்கு"],["நிகழ்வுக் காட்சி","பொருள் வலது 60%, இடது 30% தகவலுக்கு"],["சமூக ஊடக அட்டை","சிறிய திரையிலும் தெளிவான எளிய வடிவங்கள்"]],
+ tpl:["காட்சி","அமைப்பு","ஒளி","வண்ணங்கள்","பாணி","வெளியீடு","படத்தின் சுமார் 30% அமைதியான வெற்றிடமாக விடவும்.","மேல் இடதுபுறத்திலிருந்து மென்மையான பகல் ஒளி, மென்மையான நிழல்கள், தெளிவான ஆழம்.","சதுரப் படம். படத்திற்குள் எழுத்துகளோ சொற்களோ இல்லை. AR 1:1","என் நாட்டின் விவரம்"]
+};
+I18N.id = {
+ ui:["Pilih bahasa Anda","Anda dapat menggantinya kapan saja di bagian atas.","Cerita apa yang akan disampaikan gambar Anda?","Pilih ide untuk gambar Anda.","Pilih subjek utama","Satu simbol yang jelas membuat pesan kuat.","Pilih gaya gambar","Tentukan tampilan permukaan, kedalaman, dan ruang.","Pilih warna","Pilih suasana","Warna dan suasana dimasukkan ke dalam prompt.","Akan digunakan di mana?","Tata letak berubah sesuai penggunaan.","Prompt Anda sudah siap","Salin dan tempel di Canva AI.","Tambahkan detail dari negara Anda (opsional)","contoh: sawah terasering dan gunung","Kembali","Lanjut","Buat prompt saya","Prompt dalam bahasa Anda","Prompt bahasa Inggris (terbaik untuk AI gambar)","Salin","Tersalin!","Buka Canva","Mulai lagi","Di Canva, buka Canva AI atau Magic Media lalu tempel prompt. Tambahkan judul dan nama nanti dengan alat teks.","Terjemahan ini disiapkan dengan bantuan AI. Jika ada kata yang terasa salah, beri tahu instruktur.","Arah|Subjek|Gaya|Warna & suasana|Penggunaan|Prompt","Bahasa"],
+ dirs:[["Nilai pendidikan","Belajar, tumbuh, dan percaya dalam satu simbol"],["Perjalanan pendidikan saya","Kenangan hangat tentang sekolah dan orang-orang"],["Masa depan pendidikan","Manusia, tempat, dan teknologi saling terhubung"]],
+ subs:[["Buku dan tunas","Tunas hijau yang tumbuh dari buku yang terbuka"],["Jalan belajar","Jalan landai menuju cahaya lembut di kejauhan"],["Pohon kebersamaan","Pohon yang tumbuh dari akar yang saling berpegangan"],["Lampu ilmu","Lampu kecil yang menerangi meja yang tenang di malam hari"],["Kelas pertama saya","Kelas yang cerah dengan pohon di luar jendela"],["Surat dari murid","Surat tulisan tangan dan bunga liar kecil di atas meja"],["Jalan ke sekolah","Anak-anak berjalan bersama ke sekolah di pagi hari"],["Teman dari banyak negara","Tangan dari banyak negara meletakkan buku di satu meja"],["Jembatan penghubung","Jembatan cahaya yang menghubungkan dua tempat"],["Jaringan belajar global","Bola dunia yang dililit garis bercahaya penghubung sekolah"],["Teknologi dan tunas","Tunas yang tumbuh di dalam bingkai teknologi bundar"],["Cakrawala baru","Matahari terbit di cakrawala dengan garis data tipis di langit"]],
+ styles:[["Poster visual","Satu simbol, ruang kosong luas, urutan jelas"],["Foto editorial","Foto dokumenter yang alami dan realistis"],["Cat air modern","Sapuan cat air lembut dengan garis tinta tipis"],["3D minimalis","Objek 3D doff dalam ruang yang lembut"]],
+ pals:[["Ciri khas Chungnam","Biru 60% · Putih 30% · Hijau dan oranye 10%"],["Biru dongker forum","Biru dongker 60% · Biru 30% · Emas 10%"],["Toska masa depan","Toska tua 60% · Toska 30% · Mint 10%"],["Kenangan hangat","Cokelat 60% · Krem 30% · Aprikot 10%"]],
+ moods:[["Kepercayaan dan keseimbangan","Tenang, datar, dan stabil"],["Wawasan dan kedalaman","Cahaya yang berkumpul ke satu arah, kedalaman yang hening"],["Hubungan hangat","Lengkung lembut, jarak dekat, cahaya lembut"],["Visi berani","Garis yang naik dan cakrawala terbuka"]],
+ uses:[["Mug","Subjek di tengah 55%, margin aman 18% di tepi"],["Sampul laporan","Subjek di 60% bawah, 30% atas untuk judul"],["Visual acara","Subjek di 60% kanan, 30% kiri untuk informasi"],["Kartu media sosial","Bentuk sederhana yang jelas di layar kecil"]],
+ tpl:["Adegan","Komposisi","Pencahayaan","Warna","Gaya","Hasil","Sisakan sekitar 30% gambar sebagai ruang kosong yang tenang.","Cahaya siang lembut dari kiri atas, bayangan halus, kedalaman jelas.","Gambar persegi. Tanpa huruf atau kata di dalam gambar. AR 1:1","Detail dari negara saya"]
+};
+I18N.uz = {
+ ui:["Tilingizni tanlang","Uni istalgan vaqtda yuqoridan o‘zgartirishingiz mumkin.","Rasmingiz qanday hikoya aytadi?","Rasmingiz g‘oyasini tanlang.","Asosiy mavzuni tanlang","Bitta aniq ramz xabarni kuchli qiladi.","Uslubni tanlang","Sirt, chuqurlik va bo‘shliq qanday ko‘rinishini hal qiling.","Ranglarni tanlang","Kayfiyatni tanlang","Ranglar va kayfiyat promptga yoziladi.","Qayerda ishlatasiz?","Joylashuv foydalanishga qarab o‘zgaradi.","Promptingiz tayyor","Nusxa oling va Canva AI ga joylang.","O‘z mamlakatingizdan bir detal qo‘shing (ixtiyoriy)","masalan: Samarqanddagi moviy gumbazlar","Orqaga","Keyingi","Promptimni yaratish","Sizning tilingizdagi prompt","Inglizcha prompt (rasm AI uchun eng yaxshisi)","Nusxa olish","Nusxa olindi!","Canva’ni ochish","Qaytadan boshlash","Canva’da Canva AI yoki Magic Media’ni oching va promptni joylang. Sarlavha va ismlarni keyin matn vositasi bilan qo‘shing.","Bu tarjima AI yordamida tayyorlangan. Biror so‘z noto‘g‘ri tuyulsa, o‘qituvchiga ayting.","Yo‘nalish|Mavzu|Uslub|Rang va kayfiyat|Foydalanish|Prompt","Til"],
+ dirs:[["Ta’limning qadri","O‘rganish, o‘sish va ishonch bitta ramzda"],["Mening ta’lim yo‘lim","Maktablar va odamlar haqidagi iliq xotiralar"],["Ta’lim kelajagi","Odamlar, joylar va texnologiya bog‘langan"]],
+ subs:[["Kitob va nihol","Ochiq kitobdan o‘sib chiqayotgan yashil nihol"],["Bilim yo‘li","Uzoqdagi mayin nurga olib boruvchi yo‘l"],["Birdamlik daraxti","Bir-birini ushlagan ildizlardan o‘sgan daraxt"],["Bilim chirog‘i","Kechasi sokin stolni yoritayotgan kichik chiroq"],["Mening birinchi sinfxonam","Deraza ortida daraxt bor quyoshli sinfxona"],["O‘quvchining maktubi","Stol ustida qo‘lda yozilgan maktub va kichik yovvoyi gul"],["Maktabga yo‘l","Ertalab birga maktabga ketayotgan bolalar"],["Ko‘p mamlakatlardan do‘stlar","Ko‘p mamlakatlarning qo‘llari bitta stolga kitob qo‘ymoqda"],["Bog‘lovchi ko‘prik","Ikki joyni bog‘lovchi nur ko‘prigi"],["Global ta’lim tarmog‘i","Maktablarni bog‘lovchi nurli chiziqlar bilan o‘ralgan globus"],["Texnologiya va nihol","Dumaloq texnologik ramka ichida o‘sayotgan nihol"],["Yangi ufq","Osmonda ingichka ma’lumot chiziqlari bilan ufqdagi quyosh chiqishi"]],
+ styles:[["Plakat vizuali","Bitta ramz, keng bo‘sh joy, aniq tartib"],["Tahririy foto","Tabiiy va real hujjatli fotosurat"],["Zamonaviy akvarel","Mayin akvarel va ingichka siyoh chiziqlari"],["Minimal 3D","Mayin makondagi xira 3D obyektlar"]],
+ pals:[["Chungnam ramzi","Ko‘k 60% · Oq 30% · Yashil va to‘q sariq 10%"],["Forum to‘q ko‘k","To‘q ko‘k 60% · Ko‘k 30% · Oltin 10%"],["Kelajak firuzasi","To‘q firuza 60% · Firuza 30% · Yalpiz 10%"],["Iliq xotiralar","Jigarrang 60% · Krem 30% · O‘rik rangi 10%"]],
+ moods:[["Ishonch va muvozanat","Sokin, tekis va barqaror"],["Tafakkur va chuqurlik","Bir tomonga yig‘iluvchi nur, sokin chuqurlik"],["Iliq aloqa","Mayin egri chiziqlar, yaqinlik, yumshoq nur"],["Jasur qarash","Ko‘tariluvchi chiziqlar va ochiq ufq"]],
+ uses:[["Krujka","Mavzu markazdagi 55% da, chetlarda 18% xavfsiz joy"],["Hisobot muqovasi","Mavzu pastki 60% da, yuqori 30% sarlavha uchun"],["Tadbir vizuali","Mavzu o‘ng 60% da, chap 30% ma’lumot uchun"],["Ijtimoiy tarmoq kartasi","Kichik ekranda ham aniq oddiy shakllar"]],
+ tpl:["Sahna","Kompozitsiya","Yoritish","Ranglar","Uslub","Natija","Rasmning taxminan 30% qismini sokin bo‘sh joy sifatida qoldiring.","Yuqori chapdan mayin kunduzgi yorug‘lik, yumshoq soyalar, aniq chuqurlik.","Kvadrat rasm. Rasm ichida harf yoki so‘z yo‘q. AR 1:1","Mamlakatimdan detal"]
+};
+I18N.ur = {
+ ui:["اپنی زبان منتخب کریں","آپ اسے کسی بھی وقت اوپر سے بدل سکتے ہیں۔","آپ کی تصویر کون سی کہانی سنائے گی؟","اپنی تصویر کا خیال منتخب کریں۔","مرکزی موضوع منتخب کریں","ایک واضح علامت پیغام کو مضبوط بناتی ہے۔","انداز منتخب کریں","سطح، گہرائی اور جگہ کیسی دکھے گی، یہ طے کریں۔","رنگ منتخب کریں","ماحول منتخب کریں","رنگ اور احساس پرامپٹ میں شامل ہو جاتے ہیں۔","آپ اسے کہاں استعمال کریں گے؟","استعمال کے مطابق ترتیب بدل جاتی ہے۔","آپ کا پرامپٹ تیار ہے","کاپی کر کے Canva AI میں پیسٹ کریں۔","اپنے ملک کی کوئی تفصیل شامل کریں (اختیاری)","مثال: برف پوش پہاڑوں کی وادی","واپس","اگلا","میرا پرامپٹ بنائیں","آپ کی زبان میں پرامپٹ","انگریزی پرامپٹ (تصویری AI کے لیے بہترین)","کاپی","کاپی ہو گیا!","Canva کھولیں","دوبارہ شروع کریں","Canva میں Canva AI یا Magic Media کھولیں اور پرامپٹ پیسٹ کریں۔ عنوان اور نام بعد میں ٹیکسٹ ٹول سے شامل کریں۔","یہ ترجمہ AI کی مدد سے تیار کیا گیا ہے۔ اگر کوئی لفظ غلط لگے تو انسٹرکٹر کو بتائیں۔","سمت|موضوع|انداز|رنگ اور ماحول|استعمال|پرامپٹ","زبان"],
+ dirs:[["تعلیم کی قدر","سیکھنا، بڑھنا اور اعتماد ایک علامت میں"],["میرا تعلیمی سفر","اسکولوں اور لوگوں کی گرم جوش یادیں"],["تعلیم کا مستقبل","لوگ، جگہیں اور ٹیکنالوجی ایک دوسرے سے جڑے ہوئے"]],
+ subs:[["کتاب اور کونپل","کھلی کتاب سے اگتی ہوئی سبز کونپل"],["علم کا راستہ","دور ایک نرم روشنی کی طرف جاتا راستہ"],["یکجہتی کا درخت","ایک دوسرے کو تھامے جڑوں سے اگتا درخت"],["علم کا چراغ","رات کو پرسکون میز کو روشن کرتا چھوٹا چراغ"],["میری پہلی کلاس","کھڑکی کے باہر درخت والی دھوپ بھری کلاس"],["ایک طالب علم کا خط","میز پر ہاتھ سے لکھا خط اور ایک چھوٹا جنگلی پھول"],["اسکول کا راستہ","صبح ایک ساتھ اسکول جاتے بچے"],["کئی ملکوں کے دوست","کئی ملکوں کے ہاتھ ایک ہی میز پر کتابیں رکھتے ہوئے"],["رابطے کا پل","دو جگہوں کو جوڑتا روشنی کا پل"],["عالمی تعلیمی نیٹ ورک","اسکولوں کو جوڑتی چمکتی لکیروں میں لپٹا ہوا گلوب"],["ٹیکنالوجی اور کونپل","گول ٹیکنالوجی فریم کے اندر اگتی کونپل"],["نیا افق","آسمان میں باریک ڈیٹا لکیروں کے ساتھ افق پر طلوعِ آفتاب"]],
+ styles:[["پوسٹر بصری","ایک علامت، کھلی خالی جگہ، واضح ترتیب"],["ادارتی تصویر","فطری اور حقیقی دستاویزی تصویر"],["جدید واٹر کلر","نرم واٹر کلر اور باریک سیاہی کی لکیریں"],["سادہ 3D","نرم فضا میں بغیر چمک کی 3D اشیاء"]],
+ pals:[["چُنگنام کی پہچان","نیلا 60% · سفید 30% · سبز اور نارنجی 10%"],["فورم نیوی","گہرا نیلا 60% · نیلا 30% · سنہری 10%"],["مستقبل کا فیروزی","گہرا فیروزی 60% · فیروزی 30% · پودینہ 10%"],["گرم یادیں","بھورا 60% · کریم 30% · خوبانی 10%"]],
+ moods:[["اعتماد اور توازن","پرسکون، ہموار اور مستحکم"],["بصیرت اور گہرائی","ایک سمت میں جمع ہوتی روشنی، خاموش گہرائی"],["گرم جوش تعلق","نرم خم، قربت، ہلکی روشنی"],["جرأت مند وژن","اوپر اٹھتی لکیریں اور کھلا افق"]],
+ uses:[["مگ","موضوع درمیان کے 55% میں، کناروں پر 18% محفوظ جگہ"],["رپورٹ کا سرورق","موضوع نیچے کے 60% میں، اوپر کے 30% عنوان کے لیے"],["تقریب کی تصویر","موضوع دائیں 60% میں، بائیں 30% معلومات کے لیے"],["سوشل میڈیا کارڈ","چھوٹی اسکرین پر بھی واضح سادہ شکلیں"]],
+ tpl:["منظر","ترتیب","روشنی","رنگ","انداز","نتیجہ","تصویر کا تقریباً 30% حصہ پرسکون خالی جگہ کے طور پر چھوڑیں۔","اوپر بائیں سے نرم دن کی روشنی، ہلکے سائے، واضح گہرائی۔","مربع تصویر۔ تصویر کے اندر کوئی حرف یا لفظ نہیں۔ AR 1:1","میرے ملک کی تفصیل"]
+};
+I18N.th = {
+ ui:["เลือกภาษาของคุณ","เปลี่ยนได้ทุกเมื่อจากเมนูด้านบน","ภาพของคุณจะเล่าเรื่องอะไร?","เลือกแนวคิดของภาพ","เลือกสิ่งหลักในภาพ","สัญลักษณ์ที่ชัดเจนหนึ่งอย่างทำให้สารมีพลัง","เลือกรูปแบบภาพ","กำหนดว่าพื้นผิว ความลึก และพื้นที่ว่างจะออกมาอย่างไร","เลือกสี","เลือกอารมณ์ของภาพ","สีและอารมณ์จะถูกใส่ลงในพรอมต์","จะนำไปใช้ที่ไหน?","การจัดวางจะเปลี่ยนตามการใช้งาน","พรอมต์ของคุณพร้อมแล้ว","คัดลอกแล้ววางใน Canva AI","เพิ่มรายละเอียดจากประเทศของคุณ (ไม่บังคับ)","เช่น วัดริมแม่น้ำยามเช้า","ย้อนกลับ","ถัดไป","สร้างพรอมต์ของฉัน","พรอมต์ภาษาของคุณ","พรอมต์ภาษาอังกฤษ (เหมาะกับ AI สร้างภาพที่สุด)","คัดลอก","คัดลอกแล้ว!","เปิด Canva","เริ่มใหม่","ใน Canva ให้เปิด Canva AI หรือ Magic Media แล้ววางพรอมต์ เพิ่มชื่อเรื่องและชื่อภายหลังด้วยเครื่องมือข้อความ","คำแปลนี้จัดทำด้วยความช่วยเหลือของ AI หากคำใดดูไม่ถูกต้อง โปรดบอกผู้สอน","ทิศทาง|สิ่งหลัก|รูปแบบ|สีและอารมณ์|การใช้งาน|พรอมต์","ภาษา"],
+ dirs:[["คุณค่าของการศึกษา","การเรียนรู้ การเติบโต และความไว้วางใจในสัญลักษณ์เดียว"],["เส้นทางการศึกษาของฉัน","ความทรงจำอบอุ่นจากโรงเรียนและผู้คน"],["อนาคตของการศึกษา","ผู้คน สถานที่ และเทคโนโลยีเชื่อมโยงกัน"]],
+ subs:[["หนังสือและต้นอ่อน","ต้นอ่อนสีเขียวงอกจากหนังสือที่เปิดอยู่"],["เส้นทางแห่งการเรียนรู้","ทางเดินนุ่มนวลที่นำไปสู่แสงไกล ๆ"],["ต้นไม้แห่งความร่วมมือ","ต้นไม้ที่เติบโตจากรากที่โอบกัน"],["ตะเกียงแห่งความรู้","ตะเกียงเล็ก ๆ ส่องโต๊ะเงียบสงบยามค่ำ"],["ห้องเรียนแรกของฉัน","ห้องเรียนที่มีแดดส่องและต้นไม้นอกหน้าต่าง"],["จดหมายจากนักเรียน","จดหมายเขียนด้วยมือกับดอกไม้ป่าเล็ก ๆ บนโต๊ะ"],["ทางไปโรงเรียน","เด็ก ๆ เดินไปโรงเรียนด้วยกันยามเช้า"],["เพื่อนจากหลายประเทศ","มือจากหลายประเทศวางหนังสือบนโต๊ะตัวเดียวกัน"],["สะพานแห่งการเชื่อมโยง","สะพานแสงที่เชื่อมสองสถานที่"],["เครือข่ายการเรียนรู้โลก","ลูกโลกที่มีเส้นเรืองแสงเชื่อมโรงเรียนต่าง ๆ"],["เทคโนโลยีและต้นอ่อน","ต้นอ่อนที่เติบโตในกรอบเทคโนโลยีทรงกลม"],["ขอบฟ้าใหม่","พระอาทิตย์ขึ้นที่ขอบฟ้าพร้อมเส้นข้อมูลบาง ๆ บนท้องฟ้า"]],
+ styles:[["ภาพโปสเตอร์","สัญลักษณ์เดียว พื้นที่ว่างกว้าง ลำดับชัดเจน"],["ภาพถ่ายสารคดี","ภาพถ่ายที่เป็นธรรมชาติและสมจริง"],["สีน้ำร่วมสมัย","สีน้ำนุ่ม ๆ กับเส้นหมึกบาง ๆ"],["3D มินิมอล","วัตถุ 3D ผิวด้านในพื้นที่นุ่มนวล"]],
+ pals:[["ซิกเนเจอร์ชุงนัม","น้ำเงิน 60% · ขาว 30% · เขียวและส้ม 10%"],["กรมท่าฟอรัม","กรมท่า 60% · น้ำเงิน 30% · ทอง 10%"],["เขียวอมฟ้าแห่งอนาคต","เขียวอมฟ้าเข้ม 60% · เขียวอมฟ้า 30% · มิ้นต์ 10%"],["ความทรงจำอบอุ่น","น้ำตาล 60% · ครีม 30% · แอปริคอต 10%"]],
+ moods:[["ความไว้วางใจและความสมดุล","สงบ ราบเรียบ และมั่นคง"],["ความลึกซึ้ง","แสงที่รวมไปทางเดียว ความลึกที่เงียบสงบ"],["ความผูกพันอบอุ่น","เส้นโค้งนุ่ม ระยะใกล้ แสงอ่อนโยน"],["วิสัยทัศน์ที่กล้าหาญ","เส้นที่สูงขึ้นและขอบฟ้าที่เปิดกว้าง"]],
+ uses:[["แก้วมัค","สิ่งหลักอยู่กลางภาพ 55% เว้นขอบปลอดภัย 18%"],["ปกรายงาน","สิ่งหลักอยู่ด้านล่าง 60% ด้านบน 30% สำหรับชื่อเรื่อง"],["ภาพกิจกรรม","สิ่งหลักอยู่ด้านขวา 60% ด้านซ้าย 30% สำหรับข้อมูล"],["การ์ดโซเชียลมีเดีย","รูปทรงเรียบง่ายที่เห็นชัดบนจอเล็ก"]],
+ tpl:["ฉาก","องค์ประกอบ","แสง","สี","รูปแบบ","ผลลัพธ์","เว้นพื้นที่ว่างสงบประมาณ 30% ของภาพ","แสงกลางวันนุ่ม ๆ จากด้านบนซ้าย เงาอ่อน ความลึกชัดเจน","ภาพสี่เหลี่ยมจัตุรัส ไม่มีตัวอักษรหรือคำในภาพ AR 1:1","รายละเอียดจากประเทศของฉัน"]
+};
+I18N.rw = {
+ ui:["Hitamo ururimi rwawe","Ushobora kuruhindura igihe cyose hejuru.","Ifoto yawe izavuga iyihe nkuru?","Hitamo igitekerezo cy'ifoto yawe.","Hitamo ingingo nyamukuru","Ikimenyetso kimwe gisobanutse gikomeza ubutumwa.","Hitamo uburyo","Hitamo uko ubuso, ubujyakuzimu n'umwanya bizagaragara.","Hitamo amabara","Hitamo umwuka","Amabara n'umwuka byandikwa muri prompt.","Uzayikoresha he?","Imiterere ihinduka bitewe n'ikoreshwa.","Prompt yawe yateguwe","Yikoporore uyishyire muri Canva AI.","Ongeraho ikintu cyo mu gihugu cyawe (si ngombwa)","urugero: imisozi y'icyatsi n'imirima y'icyayi","Subira inyuma","Komeza","Kora prompt yanjye","Prompt mu rurimi rwawe","Prompt mu Cyongereza (nziza kuri AI y'amafoto)","Koporora","Byakoporowe!","Fungura Canva","Ongera utangire","Muri Canva, fungura Canva AI cyangwa Magic Media hanyuma ushyiremo prompt. Ongeraho imitwe n'amazina nyuma ukoresheje igikoresho cy'inyandiko.","Iyi nsobanuro yateguwe hifashishijwe AI. Niba hari ijambo ritumvikana neza, bwira umwarimu.","Icyerekezo|Ingingo|Uburyo|Amabara n'umwuka|Ikoreshwa|Prompt","Ururimi"],
+ dirs:[["Agaciro k'uburezi","Kwiga, gukura n'icyizere mu kimenyetso kimwe"],["Urugendo rwanjye mu burezi","Kwibuka neza amashuri n'abantu"],["Ejo hazaza h'uburezi","Abantu, ahantu n'ikoranabuhanga bihuzwa"]],
+ subs:[["Igitabo n'umumero","Umumero w'icyatsi umera mu gitabo gifunguye"],["Inzira yo kwiga","Inzira igana ku rumuri rworoheje rwa kure"],["Igiti cy'ubufatanye","Igiti kimera ku mizi ifatanye"],["Itara ry'ubumenyi","Itara rito rimurikira ameza atuje nijoro"],["Ishuri ryanjye rya mbere","Ishuri ririmo izuba n'igiti hanze y'idirishya"],["Ibaruwa y'umunyeshuri","Ibaruwa yanditswe n'intoki n'akarabo gato ku meza"],["Inzira ijya ku ishuri","Abana bagenda hamwe bajya ku ishuri mu gitondo"],["Inshuti zo mu bihugu byinshi","Amaboko yo mu bihugu byinshi ashyira ibitabo ku meza amwe"],["Ikiraro gihuza","Ikiraro cy'urumuri gihuza ahantu habiri"],["Urusobe rw'imyigire rw'isi","Isi izengurutswe n'imirongo imurika ihuza amashuri"],["Ikoranabuhanga n'umumero","Umumero ukura mu ikadiri y'ikoranabuhanga y'uruziga"],["Ikirere gishya","Izuba rirashe ku kirere n'imirongo mito y'amakuru"]],
+ styles:[["Ifoto y'icyapa","Ikimenyetso kimwe, umwanya munini, gahunda isobanutse"],["Ifoto y'ikinyamakuru","Ifoto karemano kandi y'ukuri"],["Irangi ry'amazi rigezweho","Irangi ry'amazi ryoroheje n'imirongo mito y'wino"],["3D yoroheje","Ibintu bya 3D bitabengerana mu mwanya woroheje"]],
+ pals:[["Ikirango cya Chungnam","Ubururu 60% · Umweru 30% · Icyatsi n'icunga 10%"],["Ubururu bwijimye","Ubururu bwijimye 60% · Ubururu 30% · Zahabu 10%"],["Ubururu-icyatsi bw'ejo","Ubururu-icyatsi bwijimye 60% · Ubururu-icyatsi 30% · Mente 10%"],["Kwibuka bishyushye","Ikigina 60% · Kirimu 30% · Aburiko 10%"]],
+ moods:[["Icyizere n'uburinganire","Gutuza no guhagarara neza"],["Ubushishozi","Urumuri ruteranira hamwe, ubujyakuzimu butuje"],["Ubusabane bushyushye","Imirongo yoroheje, kuba hafi, urumuri rworoheje"],["Icyerekezo gitinyutse","Imirongo izamuka n'ikirere gifunguye"]],
+ uses:[["Igikombe","Ingingo hagati (55%), umwanya w'umutekano 18% ku mpande"],["Igifuniko cya raporo","Ingingo hasi (60%), hejuru 30% ku mutwe"],["Ifoto y'igikorwa","Ingingo iburyo (60%), ibumoso 30% ku makuru"],["Ikarita y'imbuga nkoranyambaga","Ishusho yoroshye igaragara neza kuri ecran nto"]],
+ tpl:["Ishusho","Imiterere","Urumuri","Amabara","Uburyo","Ibisubizo","Siga hafi 30% by'ifoto ari umwanya utuje urimo ubusa.","Urumuri rworoheje rw'amanywa ruturuka hejuru ibumoso, igicucu cyoroheje, ubujyakuzimu bugaragara.","Ifoto ya kare. Nta nyuguti cyangwa amagambo biri mu ifoto. AR 1:1","Ikintu cyo mu gihugu cyanjye"]
+};
+I18N.tn = {
+ ui:["Tlhopha puo ya gago","O ka e fetola nako nngwe le nngwe kwa godimo.","Setshwantsho sa gago se tla bolela kgang efe?","Tlhopha kakanyo ya setshwantsho sa gago.","Tlhopha setlhogo se segolo","Letshwao le le lengwe le le phepafetseng le nonotsha molaetsa.","Tlhopha mokgwa","Tsaya tshwetso ka fa bokafantle, boteng le sebaka di tla lebegang ka teng.","Tlhopha mebala","Tlhopha maikutlo","Mebala le maikutlo di kwalwa mo prompt.","O tla e dirisa kae?","Thulaganyo e fetoga go ya ka tiriso.","Prompt ya gago e siametse","E kopolole o e tsenye mo Canva AI.","Oketsa sengwe go tswa kwa nageng ya gago (ga se tlamelo)","sk.: dikgomo mo naheng ya Kgalagadi","Morago","Tswelela","Dira prompt ya me","Prompt ka puo ya gago","Prompt ka Seesimane (e e gaisang mo AI ya ditshwantsho)","Kopolola","E kopolotswe!","Bula Canva","Simolola gape","Mo Canva, bula Canva AI kgotsa Magic Media o tsenye prompt. Oketsa ditlhogo le maina morago ka sedirisiwa sa mafoko.","Phetolelo e e baakantswe ka thuso ya AI. Fa lefoko lengwe le sa utlwale sentle, bolelela morutabana.","Tsela|Setlhogo|Mokgwa|Mebala le maikutlo|Tiriso|Prompt","Puo"],
+ dirs:[["Botlhokwa jwa thuto","Go ithuta, go gola le tshepo mo letshwaong le le lengwe"],["Loeto lwa me mo thutong","Dikgopolo tse di mofuthu tsa dikolo le batho"],["Isago ya thuto","Batho, mafelo le thekenoloji di golaganye"]],
+ subs:[["Buka le thunya","Thunya e tala e mela mo bukeng e e bulegileng"],["Tsela ya go ithuta","Tsela e e isang kwa leseding le le bonolo kwa kgakala"],["Setlhare sa kopano","Setlhare se se melang mo medung e e tshwaraganeng"],["Lebone la kitso","Lebone le lennye le le phatsimisang tafole e e didimetseng bosigo"],["Phaposi ya me ya ntlha","Phaposiborutelo e e nang le letsatsi le setlhare kwa ntle ga fensetere"],["Lekwalo la moithuti","Lekwalo le le kwadilweng ka seatla le sethunya se sennye mo tafoleng"],["Tsela ya sekolo","Bana ba tsamaya mmogo go ya sekolong mo mosong"],["Ditsala tsa dinaga di le dintsi","Diatla tsa dinaga di le dintsi di baya dibuka mo tafoleng e le nngwe"],["Borogo jwa kgolagano","Borogo jwa lesedi bo golaganya mafelo a mabedi"],["Neteweke ya thuto ya lefatshe","Lefatshe le dikologilwe ke methalo e e phatsimang e e golaganyang dikolo"],["Thekenoloji le thunya","Thunya e gola mo teng ga foreime e e kgolokwe ya thekenoloji"],["Pheletso e ntšhwa","Go tlhaba ga letsatsi kwa pheletsong ya lefatshe ka methalo e e tshesane ya data"]],
+ styles:[["Setshwantsho sa phousetara","Letshwao le le lengwe, sebaka se segolo, thulaganyo e e phepafetseng"],["Setshwantsho sa makasine","Setshwantsho sa tlholego le sa nnete"],["Pente ya metsi ya segompieno","Pente ya metsi e e bonolo le methalo e e tshesane ya enke"],["3D e e motlhofo","Dilo tsa 3D tse di sa phatsimeng mo sebakeng se se bonolo"]],
+ pals:[["Letshwao la Chungnam","Bolou 60% · Bosweu 30% · Botala le namune 10%"],["Bolou jo bo lefifi","Bolou jo bo lefifi 60% · Bolou 30% · Gauta 10%"],["Bolou-botala jwa isago","Bolou-botala jo bo lefifi 60% · Bolou-botala 30% · Minti 10%"],["Dikgopolo tse di mofuthu","Borokwa 60% · Kerimi 30% · Apirikoto 10%"]],
+ moods:[["Tshepo le tekatekano","Go didimala le go tsepama"],["Temogo le boteng","Lesedi le le kopanang, boteng jo bo didimetseng"],["Kgolagano e e mofuthu","Dikgopo tse di bonolo, go atamalana, lesedi le le bonolo"],["Pono e e pelokgale","Methalo e e tlhatlogang le pheletso e e bulegileng"]],
+ uses:[["Komiki","Setlhogo mo gare (55%), sebaka sa pabalesego sa 18% kwa ntlheng"],["Khabara ya pego","Setlhogo kwa tlase (60%), kwa godimo 30% ke ya setlhogo"],["Setshwantsho sa tiragalo","Setlhogo ka fa mojeng (60%), ka fa molemeng 30% ke ya tshedimosetso"],["Karata ya seboapelo","Dibopego tse di motlhofo tse di bonalang mo sekirining se sennye"]],
+ tpl:["Setshwantsho","Thulaganyo","Lesedi","Mebala","Mokgwa","Dipholo","Tlogela bo 30% jwa setshwantsho e le sebaka se se didimetseng se se se nang sepe.","Lesedi le le bonolo la motshegare go tswa kwa godimo molemeng, meriti e e bonolo, boteng jo bo bonalang.","Setshwantsho se se dikhutlonne. Ga go na ditlhaka kgotsa mafoko mo teng. AR 1:1","Sengwe go tswa kwa nageng ya me"]
+};
+I18N.sw = {
+ ui:["Chagua lugha yako","Unaweza kuibadilisha wakati wowote juu.","Picha yako itasimulia hadithi gani?","Chagua wazo la picha yako.","Chagua mada kuu","Alama moja iliyo wazi huimarisha ujumbe.","Chagua mtindo","Amua jinsi uso, kina na nafasi vitakavyoonekana.","Chagua rangi","Chagua hisia","Rangi na hisia huandikwa kwenye prompt.","Utaitumia wapi?","Mpangilio hubadilika kulingana na matumizi.","Prompt yako iko tayari","Inakili na uibandike kwenye Canva AI.","Ongeza kipengele kutoka nchi yako (si lazima)","mfano: Ziwa Victoria wakati wa macheo","Rudi","Endelea","Tengeneza prompt yangu","Prompt kwa lugha yako","Prompt kwa Kiingereza (bora kwa AI ya picha)","Nakili","Imenakiliwa!","Fungua Canva","Anza upya","Katika Canva, fungua Canva AI au Magic Media kisha ubandike prompt. Ongeza vichwa na majina baadaye kwa zana ya maandishi.","Tafsiri hii imeandaliwa kwa msaada wa AI. Ikiwa neno fulani halionekani sawa, mwambie mkufunzi.","Mwelekeo|Mada|Mtindo|Rangi na hisia|Matumizi|Prompt","Lugha"],
+ dirs:[["Thamani ya elimu","Kujifunza, kukua na kuaminiana katika alama moja"],["Safari yangu ya elimu","Kumbukumbu nzuri za shule na watu"],["Mustakabali wa elimu","Watu, mahali na teknolojia vimeunganishwa"]],
+ subs:[["Kitabu na chipukizi","Chipukizi la kijani likimea kutoka kitabu kilicho wazi"],["Njia ya kujifunza","Njia laini inayoelekea mwanga hafifu wa mbali"],["Mti wa umoja","Mti unaokua kutoka mizizi iliyoshikana"],["Taa ya maarifa","Taa ndogo ikiangaza meza tulivu usiku"],["Darasa langu la kwanza","Darasa lenye jua na mti nje ya dirisha"],["Barua ya mwanafunzi","Barua iliyoandikwa kwa mkono na ua dogo la porini mezani"],["Njia ya kwenda shule","Watoto wakitembea pamoja kwenda shule asubuhi"],["Marafiki kutoka nchi nyingi","Mikono ya nchi nyingi ikiweka vitabu juu ya meza moja"],["Daraja la kuunganisha","Daraja la mwanga linalounganisha sehemu mbili"],["Mtandao wa kujifunza duniani","Tufe la dunia lililozungukwa na mistari ing'aayo inayounganisha shule"],["Teknolojia na chipukizi","Chipukizi likikua ndani ya fremu ya teknolojia ya duara"],["Upeo mpya","Jua likichomoza kwenye upeo wa macho na mistari myembamba ya data angani"]],
+ styles:[["Bango la picha","Alama moja, nafasi kubwa tupu, mpangilio wazi"],["Picha ya kihabari","Picha ya kumbukumbu ya asili na halisi"],["Rangi za maji za kisasa","Rangi laini za maji na mistari myembamba ya wino"],["3D rahisi","Vitu vya 3D visivyong'aa katika nafasi laini"]],
+ pals:[["Saini ya Chungnam","Bluu 60% · Nyeupe 30% · Kijani na machungwa 10%"],["Bluu iliyokolea ya jukwaa","Bluu iliyokolea 60% · Bluu 30% · Dhahabu 10%"],["Samawati-kijani ya baadaye","Samawati-kijani iliyokolea 60% · Samawati-kijani 30% · Minti 10%"],["Kumbukumbu za joto","Kahawia 60% · Krimu 30% · Aprikoti 10%"]],
+ moods:[["Uaminifu na uwiano","Tulivu, sawa na thabiti"],["Busara na kina","Mwanga unaokusanyika upande mmoja, kina tulivu"],["Uhusiano wa joto","Mikunjo laini, ukaribu, mwanga mpole"],["Maono ya ujasiri","Mistari inayopanda na upeo ulio wazi"]],
+ uses:[["Kikombe","Mada katikati (55%), nafasi salama ya 18% pembeni"],["Jalada la ripoti","Mada chini (60%), juu 30% kwa kichwa"],["Picha ya tukio","Mada kulia (60%), kushoto 30% kwa taarifa"],["Kadi ya mitandao ya kijamii","Maumbo rahisi yanayoonekana vizuri kwenye skrini ndogo"]],
+ tpl:["Mandhari","Mpangilio","Mwanga","Rangi","Mtindo","Matokeo","Acha takriban 30% ya picha kama nafasi tupu tulivu.","Mwanga laini wa mchana kutoka juu kushoto, vivuli laini, kina kilicho wazi.","Picha ya mraba. Hakuna herufi wala maneno ndani ya picha. AR 1:1","Kipengele kutoka nchi yangu"]
+};
+I18N.ha = {
+ ui:["Zaɓi harshenka","Za ka iya canza shi a kowane lokaci a sama.","Wane labari hotonka zai bayar?","Zaɓi ra'ayin hotonka.","Zaɓi babban abu","Alama ɗaya bayyananniya tana ƙarfafa saƙo.","Zaɓi salo","Ka yanke yadda fuska, zurfi da sarari za su bayyana.","Zaɓi launuka","Zaɓi yanayi","Ana rubuta launuka da yanayi a cikin prompt.","A ina za ka yi amfani da shi?","Tsari yana canzawa bisa amfani.","Prompt ɗinka ya shirya","Kwafa shi ka liƙa a Canva AI.","Ƙara wani abu daga ƙasarku (ba dole ba)","misali: kasuwa mai launuka a Kano","Koma baya","Gaba","Ƙirƙiri prompt ɗina","Prompt a harshenka","Prompt da Turanci (mafi kyau ga AI na hoto)","Kwafa","An kwafa!","Buɗe Canva","Fara sabo","A Canva, buɗe Canva AI ko Magic Media sai ka liƙa prompt. Ka ƙara take da sunaye daga baya da kayan aikin rubutu.","An shirya wannan fassarar da taimakon AI. Idan wata kalma ba ta yi daidai ba, gaya wa malami.","Alƙibla|Abu|Salo|Launi da yanayi|Amfani|Prompt","Harshe"],
+ dirs:[["Darajar ilimi","Koyo, girma da amana a cikin alama ɗaya"],["Tafiyata a ilimi","Tunani mai daɗi game da makarantu da mutane"],["Makomar ilimi","Mutane, wurare da fasaha suna haɗe"]],
+ subs:[["Littafi da tsiro","Koren tsiro yana fitowa daga buɗaɗɗen littafi"],["Hanyar koyo","Hanya mai laushi zuwa haske mai nisa"],["Itacen haɗin kai","Itace da ke girma daga saiwoyin da suka riƙe juna"],["Fitilar ilimi","Ƙaramar fitila tana haskaka tebur mai shiru da dare"],["Ajina na farko","Aji mai hasken rana da itace a wajen taga"],["Wasiƙar ɗalibi","Wasiƙa da aka rubuta da hannu da ƙaramar fure a kan tebur"],["Hanyar makaranta","Yara suna tafiya tare zuwa makaranta da safe"],["Abokai daga ƙasashe da yawa","Hannaye daga ƙasashe da yawa suna ajiye littattafai a kan tebur ɗaya"],["Gadar haɗi","Gadar haske da ke haɗa wurare biyu"],["Hanyar sadarwar koyo ta duniya","Duniya da layukan haske ke kewaye da ita, suna haɗa makarantu"],["Fasaha da tsiro","Tsiro yana girma a cikin firam na fasaha mai zagaye"],["Sabon sararin sama","Fitowar rana a sararin sama da siraran layukan bayanai"]],
+ styles:[["Hoton fosta","Alama ɗaya, sarari mai faɗi, tsari bayyananne"],["Hoton jarida","Hoto na gaskiya kamar na halitta"],["Fentin ruwa na zamani","Fentin ruwa mai laushi da siraran layukan tawada"],["3D mai sauƙi","Abubuwan 3D marasa sheƙi a sarari mai laushi"]],
+ pals:[["Alamar Chungnam","Shuɗi 60% · Fari 30% · Kore da lemu 10%"],["Shuɗi mai duhu","Shuɗi mai duhu 60% · Shuɗi 30% · Zinariya 10%"],["Shuɗi-kore na gaba","Shuɗi-kore mai duhu 60% · Shuɗi-kore 30% · Na'a-na'a 10%"],["Tunani mai ɗumi","Ruwan ƙasa 60% · Kirim 30% · Afirikot 10%"]],
+ moods:[["Amana da daidaito","Natsuwa, daidai kuma tsayayye"],["Hikima da zurfi","Haske da ya taru wuri ɗaya, zurfi mai shiru"],["Haɗi mai ɗumi","Lanƙwasa masu laushi, kusanci, haske mai laushi"],["Hangen nesa mai ƙarfin hali","Layuka masu hawa da sararin sama a buɗe"]],
+ uses:[["Kofi","Abu a tsakiya (55%), sarari na tsaro 18% a gefuna"],["Bangon rahoto","Abu a ƙasa (60%), sama 30% don take"],["Hoton taro","Abu a dama (60%), hagu 30% don bayani"],["Katin kafofin sada zumunta","Siffofi masu sauƙi da ake gani a ƙaramin allo"]],
+ tpl:["Wuri","Tsari","Haske","Launuka","Salo","Sakamako","Bar kusan kashi 30% na hoton a matsayin sarari mai natsuwa.","Hasken rana mai laushi daga sama hagu, inuwa mai laushi, zurfi bayyananne.","Hoto mai murabba'i. Babu haruffa ko kalmomi a cikin hoton. AR 1:1","Wani abu daga ƙasata"]
+};
+I18N.yo = {
+ ui:["Yan èdè rẹ","O lè yí i padà nígbàkúùgbà ní òkè.","Ìtàn wo ni àwòrán rẹ yóò sọ?","Yan èrò àwòrán rẹ.","Yan kókó pàtàkì","Àmì kan tó ṣe kedere ń mú ìfiránṣẹ́ lágbára.","Yan ọ̀nà àwòrán","Pinnu bí ojú, jíjìn àti àyè yóò ṣe rí.","Yan àwọn àwọ̀","Yan ìmọ̀lára","A ń kọ àwọn àwọ̀ àti ìmọ̀lára sínú prompt.","Níbo ni o máa lò ó?","Ìṣètò ń yípadà gẹ́gẹ́ bí ìlò.","Prompt rẹ ti ṣetán","Dà á kọ kí o lẹ̀ ẹ́ sínú Canva AI.","Ṣàfikún nǹkan kan láti orílẹ̀-èdè rẹ (kò pọndandan)","àpẹẹrẹ: ọjà aláwọ̀ ní Ìbàdàn","Padà","Tẹ̀síwájú","Ṣe prompt mi","Prompt ní èdè rẹ","Prompt ní èdè Gẹ̀ẹ́sì (ó dára jù fún AI àwòrán)","Dà kọ","A ti dà á kọ!","Ṣí Canva","Bẹ̀rẹ̀ lẹ́ẹ̀kan sí i","Nínú Canva, ṣí Canva AI tàbí Magic Media kí o lẹ̀ prompt náà. Ṣàfikún àkọlé àti orúkọ lẹ́yìn náà pẹ̀lú irinṣẹ́ ọ̀rọ̀.","A pèsè ìtumọ̀ yìí pẹ̀lú ìrànlọ́wọ́ AI. Bí ọ̀rọ̀ kan kò bá dún dáadáa, sọ fún olùkọ́.","Ìtọ́sọ́nà|Kókó|Ọ̀nà|Àwọ̀ àti ìmọ̀lára|Ìlò|Prompt","Èdè"],
+ dirs:[["Iye ẹ̀kọ́","Ìkẹ́kọ̀ọ́, ìdàgbàsókè àti ìgbẹ́kẹ̀lé nínú àmì kan"],["Ìrìn-àjò ẹ̀kọ́ mi","Ìrántí dídùn nípa ilé-ìwé àti ènìyàn"],["Ọjọ́ iwájú ẹ̀kọ́","Ènìyàn, ibi àti ìmọ̀ ẹ̀rọ so pọ̀"]],
+ subs:[["Ìwé àti èéhù","Èéhù aláwọ̀ ewé tó ń hù láti inú ìwé tó ṣí sílẹ̀"],["Ọ̀nà ìkẹ́kọ̀ọ́","Ọ̀nà jẹ́jẹ́ tó lọ sí ìmọ́lẹ̀ rírọ̀ lókèèrè"],["Igi ìṣọ̀kan","Igi tó ń hù láti gbòǹgbò tó di ara wọn mú"],["Fìtílà ìmọ̀","Fìtílà kékeré tó ń tan ìmọ́lẹ̀ sí tábìlì ní òru"],["Kíláàsì mi àkọ́kọ́","Kíláàsì tí oòrùn wọ̀, pẹ̀lú igi lóde fèrèsé"],["Lẹ́tà akẹ́kọ̀ọ́","Lẹ́tà tí a fi ọwọ́ kọ àti òdòdó kékeré lórí tábìlì"],["Ọ̀nà ilé-ìwé","Àwọn ọmọdé ń rìn papọ̀ lọ sí ilé-ìwé ní òwúrọ̀"],["Ọ̀rẹ́ láti ọ̀pọ̀ orílẹ̀-èdè","Ọwọ́ láti ọ̀pọ̀ orílẹ̀-èdè ń gbé ìwé sórí tábìlì kan"],["Afárá ìsopọ̀","Afárá ìmọ́lẹ̀ tó so ibi méjì pọ̀"],["Nẹ́tíwọ̀ọ̀kì ẹ̀kọ́ àgbáyé","Àgbáyé tí àwọn ìlà dídán yí ká, tó so ilé-ìwé pọ̀"],["Ìmọ̀ ẹ̀rọ àti èéhù","Èéhù tó ń dàgbà nínú férémù ìmọ̀ ẹ̀rọ roboto"],["Ojú ọ̀run tuntun","Ìlà oòrùn ní ojú ọ̀run pẹ̀lú ìlà dátà tínín-ín"]],
+ styles:[["Àwòrán pósítà","Àmì kan, àyè òfìfo gbòòrò, ètò tó ṣe kedere"],["Fọ́tò ìwé ìròyìn","Fọ́tò àdánidá tó jọ òótọ́"],["Àwọ̀ omi ìgbàlódé","Àwọ̀ omi rírọ̀ pẹ̀lú ìlà yíǹkì tínín-ín"],["3D tó rọrùn","Àwọn nǹkan 3D tí kò dán nínú àyè rírọ̀"]],
+ pals:[["Àmì Chungnam","Búlúù 60% · Funfun 30% · Ewé àti ọsàn 10%"],["Búlúù dúdú","Búlúù dúdú 60% · Búlúù 30% · Wúrà 10%"],["Ewé-búlúù ọjọ́ iwájú","Ewé-búlúù dúdú 60% · Ewé-búlúù 30% · Míńtì 10%"],["Ìrántí ọ̀yàyà","Àwọ̀ ilẹ̀ 60% · Àwọ̀ ọ̀rá 30% · Ápíríkọ́ọ̀tì 10%"]],
+ moods:[["Ìgbẹ́kẹ̀lé àti ìwọ̀ntúnwọ̀nsì","Píparọ́rọ́, títẹ́ àti dídúró ṣinṣin"],["Òye àti jíjìn","Ìmọ́lẹ̀ tó kó jọ sí ọ̀nà kan, jíjìn tó dákẹ́"],["Ìsopọ̀ ọ̀yàyà","Ìlà títẹ̀ rírọ̀, ìsúnmọ́, ìmọ́lẹ̀ jẹ́jẹ́"],["Ìran onígboyà","Ìlà tó ń gòkè àti ojú ọ̀run tó ṣí sílẹ̀"]],
+ uses:[["Ago","Kókó ní àárín (55%), àyè ààbò 18% ní etí"],["Èèpo ìròyìn","Kókó ní ìsàlẹ̀ (60%), òkè 30% fún àkọlé"],["Àwòrán ayẹyẹ","Kókó ní ọ̀tún (60%), òsì 30% fún ìsọfúnni"],["Káàdì ìkànnì àjọlò","Àwọn ìrísí rírọrùn tó hàn kedere lórí ojú-iboju kékeré"]],
+ tpl:["Ìran","Ìṣètò","Ìmọ́lẹ̀","Àwọ̀","Ọ̀nà","Àbájáde","Fi bí ìdá 30% àwòrán sílẹ̀ gẹ́gẹ́ bí àyè òfìfo tó parọ́rọ́.","Ìmọ́lẹ̀ ọ̀sán rírọ̀ láti òkè òsì, òjìji rírọ̀, jíjìn tó ṣe kedere.","Àwòrán onígun mẹ́rin dọ́gba. Kò sí lẹ́tà tàbí ọ̀rọ̀ nínú àwòrán. AR 1:1","Nǹkan kan láti orílẹ̀-èdè mi"]
+};
+I18N.ig = {
+ ui:["Họrọ asụsụ gị","Ị nwere ike ịgbanwe ya oge ọ bụla n'elu.","Kedu akụkọ foto gị ga-akọ?","Họrọ echiche foto gị.","Họrọ isiokwu bụ isi","Otu akara doro anya na-eme ka ozi sie ike.","Họrọ ụdị","Kpebie otú elu, omimi na ohere ga-adị.","Họrọ agba","Họrọ mmetụta","A na-ede agba na mmetụta n'ime prompt.","Ebee ka ị ga-eji ya?","Nhazi na-agbanwe dịka ojiji si dị.","Prompt gị adịla njikere","Detuo ya ma tinye ya na Canva AI.","Tinye ihe sitere na mba gị (ọ bụghị iwu)","ọmụmaatụ: ahịa jupụtara n'agba n'Onitsha","Laghachi","Ọzọ","Mepụta prompt m","Prompt n'asụsụ gị","Prompt n'asụsụ Bekee (kacha mma maka AI foto)","Detuo","E detuola!","Mepee Canva","Malite ọzọ","Na Canva, mepee Canva AI ma ọ bụ Magic Media wee tinye prompt. Tinye aha na isiokwu mgbe e mesịrị site na ngwa ederede.","E ji enyemaka AI kwadebe ntụgharị a. Ọ bụrụ na okwu ọ bụla adịghị mma, gwa onye nkuzi.","Ụzọ|Isiokwu|Ụdị|Agba na mmetụta|Ojiji|Prompt","Asụsụ"],
+ dirs:[["Uru agụmakwụkwọ","Mmụta, uto na ntụkwasị obi n'otu akara"],["Njem agụmakwụkwọ m","Ncheta ọma banyere ụlọ akwụkwọ na ndị mmadụ"],["Ọdịnihu agụmakwụkwọ","Ndị mmadụ, ebe na teknụzụ jikọtara ọnụ"]],
+ subs:[["Akwụkwọ na mkpụrụ ome","Mkpụrụ ome ndụ ndụ na-epulite n'akwụkwọ meghere emeghe"],["Ụzọ mmụta","Ụzọ dị nro na-eduga n'ìhè dị anya"],["Osisi ịdị n'otu","Osisi na-eto site na mgbọrọgwụ jidere onwe ha"],["Oriọna ihe ọmụma","Obere oriọna na-enye tebụl dị jụụ ìhè n'abalị"],["Klas mbụ m","Klas jupụtara n'anyanwụ nwere osisi n'azụ windo"],["Akwụkwọ ozi nwa akwụkwọ","Akwụkwọ ozi e ji aka dee na obere ifuru ọhịa n'elu tebụl"],["Ụzọ ụlọ akwụkwọ","Ụmụaka na-eje ije ọnụ gaa ụlọ akwụkwọ n'ụtụtụ"],["Ndị enyi si ọtụtụ mba","Aka si ọtụtụ mba na-etinye akwụkwọ n'otu tebụl"],["Àkwà mmiri njikọ","Àkwà mmiri ìhè jikọrọ ebe abụọ"],["Netwọk mmụta ụwa","Ụwa e ji ahịrị na-enwu gbaa gburugburu, na-ejikọ ụlọ akwụkwọ"],["Teknụzụ na mkpụrụ ome","Mkpụrụ ome na-eto n'ime okirikiri teknụzụ"],["Mbara igwe ọhụrụ","Ọwụwa anyanwụ n'oke mbara igwe nwere ahịrị data dị gịrịgịrị"]],
+ styles:[["Foto paịsta","Otu akara, ohere sara mbara, usoro doro anya"],["Foto akụkọ","Foto eke dị ka eziokwu"],["Agba mmiri ọgbara ọhụrụ","Agba mmiri dị nro na ahịrị ink dị gịrịgịrị"],["3D dị mfe","Ihe 3D na-adịghị egbuke egbuke n'ohere dị nro"]],
+ pals:[["Akara Chungnam","Acha anụnụ anụnụ 60% · Ọcha 30% · Akwụkwọ ndụ na oroma 10%"],["Acha anụnụ gbara ọchịchịrị","Acha anụnụ gbara ọchịchịrị 60% · Acha anụnụ 30% · Ọlaedo 10%"],["Akwụkwọ ndụ-anụnụ ọdịnihu","Akwụkwọ ndụ-anụnụ gbara ọchịchịrị 60% · Akwụkwọ ndụ-anụnụ 30% · Mint 10%"],["Ncheta na-ekpo ọkụ","Aja aja 60% · Ude 30% · Apricot 10%"]],
+ moods:[["Ntụkwasị obi na nguzozi","Nwayọ, dị larịị ma kwụsie ike"],["Nghọta na omimi","Ìhè gbakọtara n'otu ụzọ, omimi dị jụụ"],["Njikọ na-ekpo ọkụ","Usoro dị nro, ịdị nso, ìhè dị nwayọ"],["Ọhụụ nwere obi ike","Ahịrị na-arị elu na mbara igwe meghere emeghe"]],
+ uses:[["Iko","Isiokwu n'etiti (55%), ohere nchekwa 18% n'akụkụ"],["Mkpuchi akụkọ","Isiokwu n'ala (60%), elu 30% maka aha"],["Foto mmemme","Isiokwu n'aka nri (60%), aka ekpe 30% maka ozi"],["Kaadị mgbasa ozi ọha","Ụdị dị mfe nke a na-ahụ nke ọma na obere ihuenyo"]],
+ tpl:["Ọnọdụ","Nhazi","Ìhè","Agba","Ụdị","Nsonaazụ","Hapụ ihe dị ka 30% nke foto ka ọ bụrụ ohere efu dị jụụ.","Ìhè ehihie dị nro si n'elu aka ekpe, onyinyo dị nro, omimi doro anya.","Foto nwere akụkụ anọ ha nhata. Enweghị mkpụrụedemede ma ọ bụ okwu n'ime foto. AR 1:1","Ihe sitere na mba m"]
+};
+
+</script>
+<script>
+"use strict";
+const LANGS=[
+ ["en","English","English","All participants"],["ko","한국어","Korean","Korea"],["fr","Français","French","Côte d’Ivoire · Rwanda"],["pt","Português","Portuguese","Timor-Leste"],["tet","Tetun","Tetum","Timor-Leste"],
+ ["es","Español","Spanish","Colombia"],["mn","Монгол","Mongolian","Mongolia"],["dv","ދިވެހި","Dhivehi","Maldives"],["si","සිංහල","Sinhala","Sri Lanka"],["ta","தமிழ்","Tamil","Sri Lanka"],
+ ["id","Bahasa Indonesia","Indonesian","Indonesia"],["uz","Oʻzbekcha","Uzbek","Uzbekistan"],["ur","اردو","Urdu","Pakistan"],["th","ไทย","Thai","Thailand"],["rw","Ikinyarwanda","Kinyarwanda","Rwanda"],
+ ["tn","Setswana","Setswana","Botswana"],["sw","Kiswahili","Swahili","Uganda"],["ha","Hausa","Hausa","Nigeria"],["yo","Yorùbá","Yoruba","Nigeria"],["ig","Igbo","Igbo","Nigeria"]
+];
+const RTL=new Set(["ur","dv"]);
+const ICONS={dirs:["◇","○","✦"],styles:["▣","◐","❍","◕"],uses:["☕","▤","✧","▢"]};
+const HEX=[["#0068B7","#F4F7F8","#48A548","#F28C28"],["#071A2B","#0B3154","#C8A96A","#F4F1E8"],["#073B4C","#138A8A","#79C9B7","#F3F7F5"],["#5B4636","#E8C7A5","#C8895A","#F7F1E8"]];
+const EN_SCENE=["An image that symbolizes the value of education and growth through learning","A scene about time shared in schools and the warmth of the people there","A vision of future education where people, places and technology connect"];
+
+const S={lang:null,step:-1,dir:null,sub:null,style:null,pal:null,mood:null,use:null,detail:""};
+try{const v=localStorage.getItem("glps-lang");if(v&&I18N[v])S.lang=v}catch(e){}
+
+const $=id=>document.getElementById(id);
+const esc=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const L=()=>I18N[S.lang||"en"];
+const EN=I18N.en;
+const ui=i=>L().ui[i]||EN.ui[i];
+const lf=t=>t.charAt(0).toLocaleLowerCase(S.lang||"en")+t.slice(1);
+
+function setLang(code){
+  S.lang=code;
+  try{localStorage.setItem("glps-lang",code)}catch(e){}
+  document.documentElement.lang=code;
+  document.documentElement.dir=RTL.has(code)?"rtl":"ltr";
+  $("langSelect").value=code;
+  $("langLabel").textContent=ui(29);
+}
+
+(function initSelect(){
+  const sel=$("langSelect");
+  sel.innerHTML=LANGS.map(l=>`<option value="${l[0]}">${esc(l[1])}${l[1]!==l[2]?" · "+esc(l[2]):""}</option>`).join("");
+  sel.addEventListener("change",()=>{setLang(sel.value);if(S.step<0)S.step=0;render()});
+})();
+
+function card(group,i,title,desc,enTitle,extra=""){
+  const pressed=S[group]===i;
+  const icon=ICONS[group+"s"]?`<span class="icon" aria-hidden="true">${ICONS[group+"s"][i]}</span>`:"";
+  const en=(S.lang&&S.lang!=="en"&&enTitle)?`<span class="en">${esc(enTitle)}</span>`:"";
+  return `<button type="button" class="card" data-group="${group}" data-i="${i}" aria-pressed="${pressed}">${icon}${extra}<h3>${esc(title)}</h3><p>${esc(desc)}</p>${en}</button>`;
+}
+function ready(){return [S.dir!==null,S.sub!==null,S.style!==null,S.pal!==null&&S.mood!==null,S.use!==null,true][S.step]}
+function nav(back=true,next=true,label){
+  return `<div class="nav">${back?`<button type="button" class="action back" data-nav="-1">${esc(ui(17))}</button>`:"<span></span>"}${next?`<button type="button" class="action next" data-nav="1" ${ready()?"":"disabled"}>${esc(label||ui(18))}</button>`:""}</div>`;
+}
+function head(eyebrow,h,d){return `<span class="eyebrow">${eyebrow}</span><h1 class="title">${esc(h)}</h1><p class="desc">${esc(d)}</p>`}
+function trNote(){const n=L().ui[27];return n?`<p class="trnote">${esc(n)}</p>`:""}
+
+function render(){
+  const labels=ui(28).split("|");
+  if(S.step<0){
+    $("bar").style.width="0%";$("stepLabel").textContent="Language · 언어 · Langue · Idioma";$("stepCount").textContent="";
+    $("steps").innerHTML=`<div class="step"><span class="eyebrow">Welcome · 환영합니다</span><h1 class="title">Choose your language</h1><p class="desc">You can change it anytime at the top. Every choice also shows the English name, and the final prompt comes in your language and in English.</p><div class="grid four">${LANGS.map(l=>`<button type="button" class="card lang-card" data-lang="${l[0]}" aria-pressed="${S.lang===l[0]}"><span class="native" dir="${RTL.has(l[0])?"rtl":"ltr"}">${esc(l[1])}</span><span class="meta">${esc(l[2])} · ${esc(l[3])}</span></button>`).join("")}</div></div>`;
+    bind();return;
+  }
+  $("bar").style.width=`${(S.step+1)/6*100}%`;
+  $("stepLabel").textContent=`STEP ${S.step+1} · ${labels[S.step]||""}`;
+  $("stepCount").textContent=`${S.step+1} / 6`;
+  const T=L();let h="";
+  if(S.step===0){
+    h=`${trNote()}${head("Perspective",ui(2),ui(3))}<div class="grid">${T.dirs.map((x,i)=>card("dir",i,x[0],x[1],EN.dirs[i][0])).join("")}</div>${nav(true)}`;
+  }else if(S.step===1){
+    const base=S.dir*4;
+    h=`${head("Subject",ui(4),ui(5))}<div class="grid four">${[0,1,2,3].map(k=>card("sub",base+k,T.subs[base+k][0],T.subs[base+k][1],EN.subs[base+k][0])).join("")}</div>
+       <div class="detail"><label for="detail">${esc(ui(15))}</label><input id="detail" type="text" maxlength="120" placeholder="${esc(ui(16))}" value="${esc(S.detail)}"></div>${nav()}`;
+  }else if(S.step===2){
+    h=`${head("Visual language",ui(6),ui(7))}<div class="grid four">${T.styles.map((x,i)=>card("style",i,x[0],x[1],EN.styles[i][0])).join("")}</div>${nav()}`;
+  }else if(S.step===3){
+    h=`${head("Color & tone",ui(8),ui(10))}<div class="grid four">${T.pals.map((x,i)=>card("pal",i,x[0],x[1],EN.pals[i][0],`<span class="swatches" aria-hidden="true">${HEX[i].map(c=>`<i style="background:${c}"></i>`).join("")}</span>`)).join("")}</div>
+       <h2 class="subhead">${esc(ui(9))}</h2><div class="grid four">${T.moods.map((x,i)=>card("mood",i,x[0],x[1],EN.moods[i][0])).join("")}</div>${nav()}`;
+  }else if(S.step===4){
+    h=`${head("Output",ui(11),ui(12))}<div class="grid four">${T.uses.map((x,i)=>card("use",i,x[0],x[1],EN.uses[i][0])).join("")}</div>${nav(true,true,ui(19))}`;
+  }else{
+    const local=S.lang&&S.lang!=="en";
+    const pills=[T.dirs[S.dir][0],T.subs[S.sub][0],T.styles[S.style][0],T.pals[S.pal][0],T.moods[S.mood][0],T.uses[S.use][0]];
+    h=`${head("Compiled prompt",ui(13),ui(14))}<div class="summary">${pills.map(p=>`<span class="pill">${esc(p)}</span>`).join("")}</div>
+      <div class="prompts ${local?"":"one"}">
+        ${local?`<div class="pbox"><h2>${esc(ui(20))}</h2><textarea class="prompt" id="pLocal" dir="${RTL.has(S.lang)?"rtl":"ltr"}" aria-label="${esc(ui(20))}">${esc(buildLocal())}</textarea><div class="copyrow"><button type="button" class="action copy" data-copy="pLocal">${esc(ui(22))}</button><span class="toast" id="t-pLocal">${esc(ui(23))}</span></div></div>`:""}
+        <div class="pbox"><h2>${esc(ui(21))} <span class="tag">Canva</span></h2><textarea class="prompt" id="pEn" dir="ltr" aria-label="English prompt">${esc(buildEnglish())}</textarea><div class="copyrow"><button type="button" class="action copy" data-copy="pEn">${esc(ui(22))}</button><a class="action canva" href="https://www.canva.com/" target="_blank" rel="noopener">${esc(ui(24))} ↗</a><span class="toast" id="t-pEn">${esc(ui(23))}</span></div></div>
+      </div>
+      <div class="note">${esc(ui(26))}</div>
+      <div class="nav"><button type="button" class="action back" data-nav="-1">${esc(ui(17))}</button><button type="button" class="action back" id="restart">${esc(ui(25))}</button></div>`;
+  }
+  $("steps").innerHTML=`<div class="step">${h}</div>`;
+  bind();
+}
+
+function buildLocal(){
+  const T=L(),t=T.tpl,end=S.lang==="th"?" ":(S.lang==="ur"?"۔ ":". ");
+  const det=S.detail.trim()?` ${t[9]}: ${S.detail.trim()}${end.trim()}`:"";
+  return `${t[0]}: ${T.dirs[S.dir][1]}${end}${T.subs[S.sub][1]}${end.trim()}${det}
+
+${t[1]}: ${T.uses[S.use][1]}${end}${T.moods[S.mood][0]}, ${lf(T.moods[S.mood][1])}${end}${t[6]}
+
+${t[2]}: ${t[7]}
+
+${t[3]}: ${T.pals[S.pal][1]}${end}HEX ${HEX[S.pal].join(", ")}
+
+${t[4]}: ${T.styles[S.style][0]}, ${lf(T.styles[S.style][1])}${end.trim()}
+
+${t[5]}: ${t[8]}`;
+}
+function buildEnglish(){
+  const d=S.detail.trim(),lang=LANGS.find(l=>l[0]===S.lang);
+  const det=d?` Include this detail from the creator's own country${S.lang&&S.lang!=="en"?` (written in ${lang[2]})`:""}: ${d}.`:"";
+  return `Scene: ${EN_SCENE[S.dir]}. ${EN.subs[S.sub][1]}.${det} One symbol carries the message; surrounding elements stay simple and low in contrast. The scene feels respectful of public education, people-centred technology and shared global learning.
+
+Composition: ${EN.uses[S.use][1]}. Mood: ${EN.moods[S.mood][0].toLowerCase()}, ${EN.moods[S.mood][1].toLowerCase()}. Build a three-level hierarchy (main, supporting, background) and leave about 30% of the square as calm empty space.
+
+Lighting: Soft 4300K daylight from the upper left, a faint cool fill from the opposite side, key-to-fill about 1:2.5, soft shadow edges and clear spatial depth.
+
+Color grading: ${EN.pals[S.pal][1]}. Palette ${HEX[S.pal].join(", ")}. Medium-low saturation throughout; gold or orange only as small accents.
+
+Texture/Medium: ${EN.styles[S.style][0]}, ${EN.styles[S.style][1].toLowerCase()}. Surfaces react to light naturally with a calm, finished look.
+
+Output: Square image for Canva Magic Media. A pure visual with no letters, logos or words; titles and names are added later in Canva. AR 1:1`;
+}
+
+function bind(){
+  document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{setLang(b.dataset.lang);S.step=0;render();scrollTo({top:0,behavior:"smooth"})});
+  document.querySelectorAll(".card[data-group]").forEach(b=>b.onclick=()=>{
+    const g=b.dataset.group,i=+b.dataset.i;S[g]=i;
+    if(g==="dir"){S.sub=null}
+    if(g==="pal"&&S.mood===null)S.mood=0;
+    render();
+  });
+  document.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>{S.step+=+b.dataset.nav;render();scrollTo({top:0,behavior:"smooth"})});
+  const det=$("detail");if(det)det.addEventListener("input",()=>{S.detail=det.value});
+  document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>{
+    const ta=$(b.dataset.copy),toast=$("t-"+b.dataset.copy);
+    const done=()=>{toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),1800)};
+    try{navigator.clipboard.writeText(ta.value).then(done,()=>{ta.select();try{document.execCommand("copy")}catch(e){}done()})}catch(e){ta.select();try{document.execCommand("copy")}catch(e2){}done()}
+  });
+  const r=$("restart");if(r)r.onclick=()=>{Object.assign(S,{step:0,dir:null,sub:null,style:null,pal:null,mood:null,use:null,detail:""});render();scrollTo({top:0,behavior:"smooth"})};
+}
+
+if(S.lang){setLang(S.lang);}else{$("langSelect").value="en";}
+render();
+</script>
