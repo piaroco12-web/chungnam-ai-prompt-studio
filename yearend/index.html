@@ -3,171 +3,81 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>연말정산 계산기 프롬프트</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<meta name="robots" content="noindex">
+<title>AI 활용 연수 바로가기</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-/* 레이아웃: 한 줄짜리 작업 순서(설계 → 만들기 → 고치기 → 점검 → 응용)를 따라 내려가는 프롬프트 카드 목록 */
-:root{
-  --bg:#f5f6fb; --surface:#ffffff; --fg:#161a33; --muted:#5a5f7a; --line:#d8dbea;
-  --accent:#131dae; --accent-soft:#e8e9fb; --ok:#1e6b34; --warn:#a32a1c;
-  --font-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-  --font-mono:"IBM Plex Mono",ui-monospace,monospace;
-}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0f1124; --surface:#181b34; --fg:#e8e9f6; --muted:#a2a6c4; --line:#2c3058;
-  --accent:#9aa0ff; --accent-soft:#232765; --ok:#7fd49a; --warn:#ff9b8c; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0f1124; --surface:#181b34; --fg:#e8e9f6; --muted:#a2a6c4; --line:#2c3058;
-  --accent:#9aa0ff; --accent-soft:#232765; --ok:#7fd49a; --warn:#ff9b8c; color-scheme:dark}
+:root{--bg:#f5f6fb;--surface:#fff;--fg:#161a33;--muted:#5a5f7a;--line:#d8dbea;--accent:#131dae;--soft:#e8e9fb;--ok:#1e6b34;
+  --body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1124;--surface:#181b34;--fg:#e8e9f6;--muted:#a2a6c4;--line:#2c3058;--accent:#9aa0ff;--soft:#232765;--ok:#7fd49a;color-scheme:dark}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16px;line-height:1.7;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 56px}
-.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
-header h1{font-size:1.75rem;line-height:1.3;margin:0 0 6px;text-wrap:balance}
-header p{margin:0;color:var(--muted)}
-.rules{border-left:3px solid var(--warn);background:var(--surface);padding:12px 16px;border-radius:0 8px 8px 0;font-size:.95rem}
-.rules b{color:var(--warn)}
-.steps{display:flex;flex-wrap:wrap;gap:8px;font-size:.9rem;color:var(--muted);margin:0;padding:0;list-style:none}
-.steps a{color:var(--accent);text-decoration:none;font-weight:600}
-section{display:flex;flex-direction:column;gap:12px}
-section h2{font-size:1.2rem;margin:0;display:flex;gap:10px;align-items:baseline;text-wrap:balance}
-section h2 .n{font-family:var(--font-mono);color:var(--accent);font-size:.95rem}
-section > p{margin:0;color:var(--muted);font-size:.95rem}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
-.card h3{font-size:1rem;margin:0}
-.card .why{margin:0;font-size:.9rem;color:var(--muted)}
-.prompt{font-size:.95rem;background:var(--accent-soft);border-radius:6px;padding:10px 12px;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;margin:0}
-.row{display:flex;justify-content:flex-end}
-button.copy{font:inherit;font-weight:600;font-size:.95rem;border:1px solid var(--accent);background:var(--accent);color:var(--surface);
-  border-radius:6px;padding:8px 16px;min-height:44px;cursor:pointer}
-button.copy.done{background:var(--surface);color:var(--ok);border-color:var(--ok)}
-button.copy:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
-footer{font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.65;
+  padding:28px max(16px,env(safe-area-inset-right)) 48px max(16px,env(safe-area-inset-left))}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1{font-size:1.6rem;margin:0 0 4px;line-height:1.3}
+.sub{margin:0;color:var(--muted);font-size:.95rem}
+h2{font-size:1.1rem;margin:0 0 8px}
+section{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.field{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0}
+.field .lab{width:64px;color:var(--muted);font-size:.9rem}
+.val{font-family:var(--mono);font-size:1.05rem;background:var(--soft);border-radius:6px;padding:8px 10px;flex:1;min-width:0;overflow-wrap:anywhere}
+select{font:inherit;font-size:1.05rem;padding:8px 10px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--fg);min-height:44px}
+button,.btn{font:inherit;font-weight:600;border:1px solid var(--accent);background:var(--accent);color:var(--surface);border-radius:6px;padding:9px 16px;min-height:44px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+button.done{background:var(--surface);color:var(--ok);border-color:var(--ok)}
+button:focus-visible,.btn:focus-visible,a:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+.note{font-size:.88rem;color:var(--muted);margin:8px 0 0}
+ul.links{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+ul.links a{display:block;padding:10px 12px;border:1px solid var(--line);border-radius:8px;color:var(--fg);text-decoration:none}
+ul.links a b{color:var(--accent)}
+ul.links a span{display:block;font-size:.88rem;color:var(--muted)}
+footer{font-size:.85rem;color:var(--muted)}
 </style>
 </head>
 <body>
-
 <div class="wrap">
 <header>
-  <h1>연말정산 계산기 프롬프트</h1>
-  <p>묻고 확인하고 만드는 AI 활용 · 2026. 11. 11. · 「복사」를 누른 뒤 AI Studio Build 입력창에 붙여 넣으세요.</p>
+  <h1>AI 활용 연수 바로가기</h1>
+  <p class="sub">묻고 확인하고 만드는 AI 활용 · 2026. 11. 11.(수) 14:30~16:10 · 강사 김선환</p>
 </header>
 
-<div class="rules"><b>지킬 것</b> · 실제 내 급여·계좌·가족 정보는 넣지 않고 예시 숫자만 씁니다. · 계산 결과는 참고용이며 실제 금액은 국세청 자료로 확인합니다. · 실습 ①은 먼저 스스로 써 보고, 막히면 여기서 복사하세요.</div>
-
-<ul class="steps">
-  <li><a href="#design">1 설계하기</a></li><li>→</li><li><a href="#build">2 만들기</a></li><li>→</li><li><a href="#fix">3 고치기</a></li><li>→</li><li><a href="#check">4 점검하기</a></li><li>→</li><li><a href="#more">5 다른 계산기</a></li>
-</ul>
-
-<section id="design">
-  <h2><span class="n">1</span>설계하기 · 역질문법</h2>
-  <p>Gemini나 AI Studio 채팅에서 먼저 설계도를 만듭니다.</p>
-  <div class="card"><h3>역질문으로 설계도 만들기</h3>
-    <p class="why">AI가 필요한 것을 하나씩 묻게 해서, 빠진 조건 없이 설계도를 받습니다.</p>
-    <pre class="prompt">연금저축·IRP 세액공제 계산기를 만들고 싶어. 만들기 전에 필요한 것을 나한테 한 번에 하나씩 물어봐 줘. 다 모이면 화면 구성, 입력 칸, 계산 규칙, 결과 표시를 .md 설계도로 정리해 줘.</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
-  <div class="card"><h3>설계도 검토 받기</h3>
-    <p class="why">만든 설계도에 빠진 점이 없는지 AI에게 다시 물어봅니다.</p>
-    <pre class="prompt">이 설계도를 처음 보는 사람 입장에서 검토해 줘. 빠진 입력값이나 애매한 계산 규칙을 3가지 이내로 알려 주고, 고친 설계도를 다시 보여 줘.</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
+<section>
+  <h2>오늘 쓸 구글 계정</h2>
+  <div class="field"><span class="lab">내 번호</span>
+    <select id="num" aria-label="계정 번호"></select></div>
+  <div class="field"><span class="lab">아이디</span><span class="val" id="idv"></span><button type="button" data-copy="idv">복사</button></div>
+  <div class="field"><span class="lab">비밀번호</span><span class="val" id="pwv">Cnsw12345!@</span><button type="button" data-copy="pwv">복사</button></div>
+  <p class="note">강사가 알려 준 번호를 고르세요. 크롬 시크릿 창(Ctrl+Shift+N)에서 로그인하고, 끝나면 로그아웃해 주세요.</p>
 </section>
 
-<section id="build">
-  <h2><span class="n">2</span>만들기 · AI Studio Build 첫 요청</h2>
-  <p>aistudio.google.com/apps 입력창에 하나만 골라 넣습니다.</p>
-  <div class="card"><h3>기본 계산기 (규칙까지 넣은 버전)</h3>
-    <p class="why">2026년 귀속 기준 공제 한도와 공제율을 직접 적어 줍니다.</p>
-    <pre class="prompt">연금저축·IRP 납입액과 총급여를 넣으면 예상 세액공제를 보여 주는 한국어 계산기를 만들어 줘.
-- 연금저축은 연 600만원까지, 연금저축과 IRP를 합쳐 연 900만원까지 공제 대상
-- 총급여 5,500만원 이하는 16.5%, 초과는 13.2%
-- 결과: 공제 대상 금액, 적용 공제율, 예상 세액공제액
-Gemini API는 쓰지 말고 계산만 해 줘. 맨 아래에 '참고용 계산이며 실제 금액은 국세청 자료로 확인'이라고 써 줘.</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
-  <div class="card"><h3>설계도를 붙여 넣는 버전</h3>
-    <p class="why">1단계에서 만든 .md 설계도를 그대로 이어 붙입니다.</p>
-    <pre class="prompt">아래 설계도대로 한국어 웹 계산기를 만들어 줘. Gemini API는 쓰지 말고 계산만 해 줘. 만들기 전에 계획을 먼저 보여 줘.
-
-(여기에 설계도 붙여 넣기)</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
-  <div class="card"><h3>짧게 시작하는 버전</h3>
-    <p class="why">규칙을 모를 때. AI가 먼저 규칙을 보여 주고 확인을 받게 합니다.</p>
-    <pre class="prompt">연금저축과 IRP 납입액으로 세액공제를 계산하는 한국어 웹 계산기를 만들고 싶어. 만들기 전에 적용할 공제 한도와 공제율을 표로 보여 주고, 내가 확인하면 그때 만들어 줘.</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
+<section>
+  <h2>바로가기</h2>
+  <ul class="links">
+    <li><a href="https://kahoot.it" target="_blank" rel="noopener"><b>카훗 퀴즈 참여</b><span>kahoot.it · 화면의 게임 PIN 입력, 닉네임은 이름</span></a></li>
+    <li><a href="https://aistudio.google.com/apps" target="_blank" rel="noopener"><b>Google AI Studio · Build</b><span>실습 ①·② · 위 계정으로 로그인</span></a></li>
+    <li><a href="prompts/"><b>계산기 만들기 프롬프트 모음</b><span>누르면 복사되는 예시 18개</span></a></li>
+    <li><a href="https://gemini.google.com" target="_blank" rel="noopener"><b>Gemini</b><span>AI Studio가 열리지 않을 때</span></a></li>
+  </ul>
 </section>
 
-<section id="fix">
-  <h2><span class="n">3</span>고치기 · 한 문장씩 더하기</h2>
-  <p>계산기가 나온 뒤 Build 왼쪽 채팅창에 하나씩 넣습니다. 한 번에 하나만 고치는 게 안전합니다.</p>
-  <div class="card"><h3>계산 과정 보여 주기</h3>
-    <pre class="prompt">결과 아래에 계산 과정을 한 줄씩 보여 줘. 공제 대상 금액 → 공제율 → 세액공제액 순서로.</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
-  <div class="card"><h3>금액 입력 편하게</h3>
-    <pre class="prompt">입력 칸을 만원 단위로 바꾸고, 결과 숫자에는 쉼표를 찍어서 '148만 5천원'처럼 읽기 쉽게 보여 줘.</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
-  <div class="card"><h3>한도 초과 알림</h3>
-    <pre class="prompt">연금저축이 600만원을 넘거나 연금저축과 IRP 합계가 900만원을 넘으면, 입력 칸 아래에 '한도를 넘은 금액은 공제되지 않아요'라고 알려 줘.</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
-  <div class="card"><h3>두 경우 비교</h3>
-    <pre class="prompt">'연금저축만 600만원 넣을 때'와 'IRP까지 합쳐 900만원 채울 때'의 세액공제를 나란히 비교하는 표를 추가해 줘.</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
-  <div class="card"><h3>보기 좋게 다듬기</h3>
-    <pre class="prompt">글자를 크게 하고, 휴대폰에서도 스크롤 없이 한 화면에 보이게 정리해 줘. 입력 칸 옆에 무엇을 넣는지 짧은 설명도 달아 줘.</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
-  <div class="card"><h3>초기화 버튼</h3>
-    <pre class="prompt">입력값을 한 번에 지우는 '다시 계산' 버튼을 결과 아래에 넣어 줘.</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
+<section>
+  <h2>자료 내려받기</h2>
+  <a class="btn" href="links.pdf" download="연수_링크모음.pdf">링크 모음 PDF 내려받기</a>
+  <p class="note">실제 급여·계좌·가족 정보는 AI에 넣지 않습니다. 공용 계정에 개인 파일을 저장하지 마세요.</p>
 </section>
-
-<section id="check">
-  <h2><span class="n">4</span>점검하기 · AI 답을 그대로 믿지 않기</h2>
-  <div class="card"><h3>검산 시키기</h3>
-    <p class="why">계산기 결과와 손 계산을 비교하게 합니다. 연습지 검산 칸과 맞춰 보세요.</p>
-    <pre class="prompt">방금 만든 계산기를 검산해 줘. 총급여 5,000만원, 연금저축 600만원, IRP 300만원일 때 손으로 계산한 과정과 계산기 결과를 나란히 보여 주고, 다르면 고쳐 줘.</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
-  <div class="card"><h3>빠진 조건 찾기</h3>
-    <pre class="prompt">이 계산기가 실제 연말정산 결과와 다를 수 있는 이유를 3가지 알려 줘. 각각 확인할 수 있는 공식 자료(국세청 등)도 적어 줘.</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
-  <div class="card"><h3>맞장구 확인</h3>
-    <pre class="prompt">내가 틀린 숫자를 말해도 맞다고 하지 말고 바로잡아 줘. 연금저축 세액공제 한도가 연 1,000만원 맞지?</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
-</section>
-
-<section id="more">
-  <h2><span class="n">5</span>다른 계산기 만들어 보기</h2>
-  <p>규칙을 AI가 먼저 정리하게 하고, 국세청 자료로 확인한 뒤 만들게 합니다. 규칙은 해마다 바뀔 수 있습니다.</p>
-  <div class="card"><h3>월세 세액공제 계산기</h3>
-    <pre class="prompt">월세 세액공제 계산기를 만들고 싶어. 2026년 귀속 기준 공제 조건과 공제율을 먼저 표로 정리하고 출처를 알려 줘. 내가 국세청 자료로 확인하고 '맞아'라고 하면 그때 만들어 줘. Gemini API는 쓰지 말고 계산만 해 줘.</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
-  <div class="card"><h3>신용카드·체크카드 소득공제 점검표</h3>
-    <pre class="prompt">신용카드와 체크카드 사용액을 넣으면 소득공제를 받기 시작하는 기준을 넘었는지 보여 주는 점검표를 만들고 싶어. 2026년 귀속 기준 규칙을 먼저 표로 보여 주고 출처를 알려 줘. 확인받은 뒤에 만들어 줘.</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
-  <div class="card"><h3>고향사랑기부 세액공제 계산기</h3>
-    <pre class="prompt">고향사랑기부금 금액을 넣으면 세액공제와 답례품 한도를 보여 주는 계산기를 만들고 싶어. 2026년 기준 구간별 공제율을 먼저 표로 보여 주고 출처를 알려 줘. 확인받은 뒤에 만들어 줘.</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
-  <div class="card"><h3>우리 반 용돈 기입장 (경제 수업용)</h3>
-    <p class="why">연말정산 대신 수업에 바로 쓰는 응용입니다. 학생 이름 대신 번호를 씁니다.</p>
-    <pre class="prompt">초등학생용 용돈 기입장 웹앱을 만들어 줘. 날짜, 들어온 돈, 쓴 돈, 내용을 적으면 남은 돈이 자동으로 계산되고, 쓴 돈을 '꼭 필요한 것'과 '갖고 싶은 것'으로 나눠 막대그래프로 보여 줘. 글자는 크고 쉬운 말로. Gemini API는 쓰지 마.</pre>
-    <div class="row"><button class="copy" type="button">복사</button></div></div>
-</section>
-
-<footer>공제 한도·공제율(연금저축 600만원, 연금저축+IRP 900만원, 16.5%/13.2%)은 2026년 귀속 기준입니다. 강사 김선환 · 충남소프트웨어교육체험센터</footer>
+<footer>충남소프트웨어교육체험센터</footer>
 </div>
-
 <script>
-document.querySelectorAll('button.copy').forEach(function(btn){
-  btn.addEventListener('click',function(){
-    var pre=btn.closest('.card').querySelector('.prompt');
-    var text=pre.textContent;
-    function done(){btn.textContent='복사됨';btn.classList.add('done');
-      setTimeout(function(){btn.textContent='복사';btn.classList.remove('done');},1800);}
-    function fallback(){var r=document.createRange();r.selectNodeContents(pre);var s=getSelection();s.removeAllRanges();s.addRange(r);
-      btn.textContent='선택됨 · Ctrl+C';}
-    try{navigator.clipboard.writeText(text).then(done,fallback);}catch(e){fallback();}
-  });
-});
+var sel=document.getElementById('num'),idv=document.getElementById('idv');
+for(var i=1;i<=30;i++){var n=('0'+i).slice(-2),o=document.createElement('option');o.value=n;o.textContent=n+'번';sel.appendChild(o);}
+try{var s=localStorage.getItem('num');if(s)sel.value=s;}catch(e){}
+function upd(){idv.textContent='swevent'+sel.value+'@g.cnees.kr';try{localStorage.setItem('num',sel.value);}catch(e){}}
+sel.addEventListener('change',upd);upd();
+document.querySelectorAll('button[data-copy]').forEach(function(b){b.addEventListener('click',function(){
+  var el=document.getElementById(b.dataset.copy),t=el.textContent;
+  function ok(){b.textContent='복사됨';b.classList.add('done');setTimeout(function(){b.textContent='복사';b.classList.remove('done');},1600);}
+  function fb(){var r=document.createRange();r.selectNodeContents(el);var g=getSelection();g.removeAllRanges();g.addRange(r);try{document.execCommand('copy');ok();}catch(e){b.textContent='Ctrl+C';}}
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(ok,fb);}else fb();
+});});
 </script>
 </body>
 </html>
