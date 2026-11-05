@@ -60,7 +60,7 @@ footer{font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padd
 <div class="rules"><b>지킬 것</b> · 실제 내 급여·계좌·가족 정보는 넣지 않고 예시 숫자만 씁니다. · 계산 결과는 참고용이며 실제 금액은 국세청 자료로 확인합니다. · 실습 ①은 먼저 스스로 써 보고, 막히면 여기서 복사하세요.</div>
 
 <ul class="steps">
-  <li><a href="#design">1 설계하기</a></li><li>→</li><li><a href="#build">2 만들기</a></li><li>→</li><li><a href="#fix">3 고치기</a></li><li>→</li><li><a href="#check">4 점검하기</a></li><li>→</li><li><a href="#more">5 다른 계산기</a></li><li>·</li><li><a href="#etf">+ ETF 설명서</a></li>
+  <li><a href="#design">1 설계하기</a></li><li>→</li><li><a href="#build">2 만들기</a></li><li>→</li><li><a href="#fix">3 고치기</a></li><li>→</li><li><a href="#check">4 점검하기</a></li><li>→</li><li><a href="#more">5 다른 계산기</a></li><li>·</li><li><a href="#etf">+ 혼자 해 보기 · ETF 추천기</a></li>
 </ul>
 
 <section id="design">
@@ -137,20 +137,35 @@ Gemini API는 쓰지 말고 계산만 해 줘. 맨 아래에 '참고용 계산�
 </section>
 
 <section id="etf">
-  <h2><span class="n">+</span>ETF 설명서 읽히기 · 실습 ③</h2>
-  <p>바로가기 화면의 "실습 ③ 자료"에서 간이투자설명서 .md를 내려받아 Gemini에 올린 뒤 씁니다.</p>
-  <div class="card"><h3>근거와 쪽수로 정리하기</h3>
-    <pre class="prompt">첨부한 간이투자설명서에만 근거해서 답해 줘. 총보수, 투자위험등급, 추종 지수, 환율 변동 위험 여부를 표로 정리하고 항목마다 쪽수를 적어 줘. 문서에 없으면 '문서에 없음'이라고 써 줘.</pre>
+  <h2><span class="n">+</span>혼자 해 보기 · ETF 추천기 만들기</h2>
+  <p>연수 뒤에 집에서 순서대로 따라 해 보세요. ① 설계 → ② 만들기 → ③ 비교 기능 → ④ 고치기 → ⑤ 점검. 이 앱은 투자 권유가 아니라 내 조건에 맞는 ETF 종류와 확인할 점을 정리하는 공부용 도구입니다.</p>
+  <div class="card"><h3>① 역질문으로 설계도 받기</h3>
+    <p class="why">Gemini 채팅에서 먼저 설계도를 받습니다.</p>
+    <pre class="prompt">ETF 추천기 웹앱을 만들고 싶어. 내 투자 기간, 손실을 견딜 수 있는 정도, 목적(노후·IRP·목돈)을 물어보고 어울리는 ETF 종류를 알려 주는 공부용 도구야. 만들기 전에 필요한 것을 나한테 한 번에 하나씩 물어봐 줘. 다 모이면 화면, 질문 목록, 판단 규칙, 결과 표시를 .md 설계도로 정리해 줘.</pre>
     <div class="row"><button class="copy" type="button">복사</button></div></div>
-  <div class="card"><h3>문서에 없는 것 물어보기</h3>
-    <p class="why">AI가 문서 밖 내용을 지어내지 않는지 확인합니다.</p>
-    <pre class="prompt">이 문서만 보고 답해 줘. IRP 계좌에서 이 ETF를 사면 세금은 어떻게 돼? 문서에 근거가 없으면 없다고 말해 줘.</pre>
+  <div class="card"><h3>② 기본 추천기 만들기</h3>
+    <p class="why">AI Studio Build 입력창에 넣습니다. 특정 종목 이름 대신 ETF 종류를 보여 주게 합니다.</p>
+    <pre class="prompt">한국어 ETF 추천기 웹앱을 만들어 줘.
+- 질문 4개: 투자 기간(3년 미만/3~10년/10년 이상), 손실을 견딜 정도(-5%/-20%/-30% 이상), 목적(노후·IRP/목돈/공부), 환율 변동이 괜찮은지
+- 결과: 어울리는 ETF 종류(국내 주식 지수형, 해외 주식 지수형, 채권형, 주식·채권 혼합형) 중 1~2개와 그 이유
+- 결과 아래에 간이투자설명서에서 확인할 항목: 총보수, 투자위험등급, 추종 지수, 환헤지 여부
+특정 상품 이름과 미래 수익률은 보여 주지 마. Gemini API는 쓰지 말고 정해진 규칙으로만 판단해 줘. 맨 아래에 '공부용 도구이며 투자 권유가 아닙니다'라고 써 줘.</pre>
     <div class="row"><button class="copy" type="button">복사</button></div></div>
-  <div class="card"><h3>표가 제대로 읽혔나 확인하기</h3>
-    <pre class="prompt">1쪽의 보수 표에서 '총보수'와 '총보수·비용'은 각각 몇 %야? 두 값이 왜 다른지, 표의 어느 칸을 읽었는지 같이 알려 줘.</pre>
+  <div class="card"><h3>③ 설명서 비교표 더하기</h3>
+    <p class="why">관심 ETF 2~3개의 간이투자설명서에서 찾은 값을 직접 넣어 비교합니다.</p>
+    <pre class="prompt">비교 탭을 추가해 줘. ETF를 최대 3개까지 입력할 수 있게 하고, 칸은 이름, 총보수·비용(%), 투자위험등급(1~6), 추종 지수, 환헤지 여부야. 입력하면 표로 나란히 보여 주고, 1,000만원을 1년 두었을 때 보수·비용이 대략 얼마인지 계산해 줘. 위험등급 숫자 옆에는 '1=매우 높은 위험, 6=매우 낮은 위험' 설명을 붙여 줘.</pre>
     <div class="row"><button class="copy" type="button">복사</button></div></div>
-  <div class="card"><h3>긴 설명서에서 찾기 (심화)</h3>
-    <pre class="prompt">첨부한 투자설명서에서 분배금은 언제, 어떻게 지급하는지 찾아 줘. 근거 문장과 쪽수를 그대로 인용해 줘.</pre>
+  <div class="card"><h3>④ 한 문장씩 고치기</h3>
+
+    <pre class="prompt">결과 화면에 내가 고른 답 4개를 다시 보여 주고, 왜 그 종류가 나왔는지 한 줄씩 설명해 줘. 휴대폰에서도 한 화면에 보이게 글자를 키워 줘.</pre>
+    <div class="row"><button class="copy" type="button">복사</button></div></div>
+  <div class="card"><h3>⑤ 스스로 점검하기</h3>
+    <p class="why">다 만든 뒤 채팅창에 넣어 앱을 점검하게 합니다.</p>
+    <pre class="prompt">지금 만든 추천기를 점검해 줘. ① 특정 상품을 사라고 권하는 것처럼 읽히는 문구가 있는지 ② 판단 규칙이 질문과 맞게 돌아가는지 테스트 3가지로 확인하고 ③ 실제 투자 결정 전에 꼭 확인해야 할 것을 3가지 알려 줘.</pre>
+    <div class="row"><button class="copy" type="button">복사</button></div></div>
+  <div class="card"><h3>막혔을 때</h3>
+    <p class="why">처음부터 다시 하지 말고 이렇게 묻습니다.</p>
+    <pre class="prompt">지금 앱에서 안 되는 점은 이거야: (여기에 한 줄로 적기). 원인을 짐작해서 설명하고, 고칠 계획을 먼저 보여 준 다음 고쳐 줘.</pre>
     <div class="row"><button class="copy" type="button">복사</button></div></div>
 </section>
 
